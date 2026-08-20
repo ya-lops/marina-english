@@ -9,7 +9,6 @@ const lessons = defineCollection({
 			title: z.string(),
 			description: z.string(),
 			updatedDate: z.coerce.date().optional(),
-			heroImage: z.optional(image()),
 		}),
 });
 

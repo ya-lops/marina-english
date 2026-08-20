@@ -23,9 +23,6 @@ const lessons = (await getCollection('lessons'));
 						lessons.map((lesson: any) => (
 							<li>
 								<a href={`/lessons/${lesson.id}/`}>
-									{lesson.data.heroImage && (
-										<Image width={720} height={360} src={lesson.data.heroImage} alt="" />
-									)}
 									<h4 class="title">{lesson.data.title}</h4>
 									<p class="description">
 										{lesson.data.description}
