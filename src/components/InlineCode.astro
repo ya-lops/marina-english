@@ -1,0 +1,10 @@
+---
+import { Fragment } from 'astro/jsx-runtime';
+
+// src/components/InlineCode.astro
+interface Props {
+  code: string;
+}
+const { code } = Astro.props;
+---
+<Fragment set:html={code} />
