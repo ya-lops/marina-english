@@ -1,0 +1,74 @@
+---
+title: '12 Тем'
+description: 'Шаблон с навигацией'
+---
+import InlineCode from '../../components/InlineCode.astro';
+
+<InlineCode code={`<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;padding:20px;position:relative}
+.nav-menu{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:1000;display:flex;flex-direction:column;gap:8px;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid #e2e8f0;max-height:90vh;overflow-y:auto}
+.nav-btn{padding:8px 14px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-weight:600;color:#334155;transition:all .2s;white-space:nowrap;text-align:left;font-size:14px}
+.nav-btn:hover{border-color:#3b82f6;color:#1e40af;background:#eff6ff}
+.section{scroll-margin-top:80px;margin:60px 0 40px 0;border:none;border-top:3px solid #e2e8f0;padding-top:40px}
+.section h1{font-size:42px;font-weight:800;color:#0f172a;margin:0 0 30px 0;text-align:center;letter-spacing:-0.5px}
+.content-placeholder{background:#fff;padding:30px;border-radius:12px;margin:20px 0;min-height:200px;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:16px}
+</style>
+</head>
+<body>
+
+<div class="nav-menu">
+  <button class="nav-btn" onclick="document.getElementById('tema1').scrollIntoView({behavior:'smooth',block:'center'})">Тема 1</button>
+  <button class="nav-btn" onclick="document.getElementById('tema2').scrollIntoView({behavior:'smooth',block:'center'})">Тема 2</button>
+  <button class="nav-btn" onclick="document.getElementById('tema3').scrollIntoView({behavior:'smooth',block:'center'})">Тема 3</button>
+  <button class="nav-btn" onclick="document.getElementById('tema4').scrollIntoView({behavior:'smooth',block:'center'})">Тема 4</button>
+  <button class="nav-btn" onclick="document.getElementById('tema5').scrollIntoView({behavior:'smooth',block:'center'})">Тема 5</button>
+  <button class="nav-btn" onclick="document.getElementById('tema6').scrollIntoView({behavior:'smooth',block:'center'})">Тема 6</button>
+  <button class="nav-btn" onclick="document.getElementById('tema7').scrollIntoView({behavior:'smooth',block:'center'})">Тема 7</button>
+  <button class="nav-btn" onclick="document.getElementById('tema8').scrollIntoView({behavior:'smooth',block:'center'})">Тема 8</button>
+  <button class="nav-btn" onclick="document.getElementById('tema9').scrollIntoView({behavior:'smooth',block:'center'})">Тема 9</button>
+  <button class="nav-btn" onclick="document.getElementById('tema10').scrollIntoView({behavior:'smooth',block:'center'})">Тема 10</button>
+  <button class="nav-btn" onclick="document.getElementById('tema11').scrollIntoView({behavior:'smooth',block:'center'})">Тема 11</button>
+  <button class="nav-btn" onclick="document.getElementById('tema12').scrollIntoView({behavior:'smooth',block:'center'})">Тема 12</button>
+</div>
+
+<div id="tema1" class="section"><h1>Тема 1</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema2" class="section"><h1>Тема 2</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema3" class="section"><h1>Тема 3</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema4" class="section"><h1>Тема 4</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema5" class="section"><h1>Тема 5</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema6" class="section"><h1>Тема 6</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema7" class="section"><h1>Тема 7</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema8" class="section"><h1>Тема 8</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema9" class="section"><h1>Тема 9</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema10" class="section"><h1>Тема 10</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema11" class="section"><h1>Тема 11</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+<div id="tema12" class="section"><h1>Тема 12</h1></div>
+<div class="content-placeholder">ВСТАВЬТЕ КОНТЕНТ СЮДА: &lt;InlineCode code={\`...\`} /&gt;</div>
+
+</body>
+</html>`} />
