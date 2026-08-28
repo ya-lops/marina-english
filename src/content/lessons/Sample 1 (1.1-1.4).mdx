@@ -1,0 +1,633 @@
+---
+title: 'Sample 1.1-1.4'
+description: ''
+---
+import InlineCode from '../../components/InlineCode.astro';
+
+<InlineCode code={`<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;padding:20px;position:relative}
+
+/* === ПРОГРЕСС-БАР === */
+.progress-container{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:6px;
+  background:#e2e8f0;
+  z-index:1002;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,#3b82f6,#10b981);
+  width:0%;
+  transition:width .4s ease;
+  border-radius:0 3px 3px 0;
+}
+.progress-text{
+  position:fixed;
+  top:10px;
+  left:20px;
+  z-index:1003;
+  background:#fff;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  color:#334155;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  border:1px solid #e2e8f0;
+}
+
+/* === КНОПКА ПЕРЕКЛЮЧЕНИЯ МЕНЮ === */
+.nav-toggle{
+  position:fixed;
+  right:20px;
+  top:20px;
+  z-index:1001;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#334155;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transition:all .25s ease;
+  line-height:1;
+}
+.nav-toggle:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+  transform:scale(1.05);
+}
+
+/* === ГЛАВНАЯ ПАНЕЛЬ МЕНЮ === */
+.nav-menu{
+  position:fixed;
+  right:20px;
+  top:80px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  background:#fff;
+  padding:12px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  border:1px solid #e2e8f0;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  transition:transform .3s ease, opacity .3s ease;
+  transform:translateX(0);
+  opacity:1;
+  width:200px;
+}
+.nav-menu.hidden{
+  transform:translateX(calc(100% + 40px));
+  opacity:0;
+  pointer-events:none;
+}
+
+/* === КНОПКА ТЕМЫ (АККОРДЕОН) === */
+.nav-btn-main{
+  padding:10px 12px;
+  border:2px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:700;
+  color:#0f172a;
+  transition:all .2s;
+  white-space:nowrap;
+  text-align:left;
+  font-size:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  width:100%;
+}
+.nav-btn-main:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+}
+.nav-btn-main.current{
+  border-color:#3b82f6;
+  background:#eff6ff;
+  color:#1e40af;
+}
+.nav-btn-main .arrow{
+  font-size:10px;
+  transition:transform .3s ease;
+  color:#94a3b8;
+}
+.nav-btn-main.active .arrow{
+  transform:rotate(90deg);
+  color:#3b82f6;
+}
+
+/* === ВЫПАДАЮЩЕЕ ПОДМЕНЮ === */
+.nav-submenu{
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  padding:4px 0 4px 8px;
+  margin-top:-2px;
+  margin-bottom:4px;
+  border-left:2px solid #e2e8f0;
+}
+.nav-submenu.open{
+  display:flex;
+}
+
+/* === КНОПКА ПОДТЕМЫ === */
+.nav-btn-sub{
+  padding:6px 10px;
+  border:1px solid #f1f5f9;
+  border-radius:6px;
+  background:#f8fafc;
+  cursor:pointer;
+  font-weight:500;
+  color:#475569;
+  transition:all .2s;
+  text-align:left;
+  font-size:12px;
+  line-height:1.3;
+  white-space:normal;
+}
+.nav-btn-sub:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+}
+.nav-btn-sub.current{
+  border-color:#3b82f6;
+  background:#dbeafe;
+  color:#1e40af;
+  font-weight:600;
+}
+
+/* === КНОПКА СБРОСА ПРОГРЕССА === */
+.nav-divider{
+  height:1px;
+  background:#e2e8f0;
+  margin:8px 0 4px 0;
+}
+.nav-btn-reset{
+  padding:8px 12px;
+  border:1px solid #fecaca;
+  border-radius:8px;
+  background:#fef2f2;
+  cursor:pointer;
+  font-weight:600;
+  color:#b91c1c;
+  transition:all .2s;
+  text-align:center;
+  font-size:12px;
+  width:100%;
+}
+.nav-btn-reset:hover{
+  background:#fee2e2;
+  border-color:#f87171;
+}
+
+/* === СЕКЦИИ И КОНТЕНТ === */
+.section{scroll-margin-top:100px;margin:60px 0 40px 0;border:none;border-top:3px solid #e2e8f0;padding-top:40px}
+.section h1{font-size:36px;font-weight:800;color:#0f172a;margin:0 0 30px 0;text-align:center;letter-spacing:-0.5px}
+.content-placeholder{
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  margin:20px 0;
+  min-height:150px;
+  border:2px dashed #cbd5e1;
+}
+
+/* === МОБИЛЬНАЯ АДАПТАЦИЯ === */
+@media (max-width: 768px){
+  .nav-menu{
+    width:180px;
+    right:10px;
+    top:75px;
+    transform:translateX(calc(100% + 40px));
+    opacity:0;
+    pointer-events:none;
+  }
+  .nav-menu.visible{
+    transform:translateX(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .section h1{font-size:28px}
+  .progress-text{
+    font-size:11px;
+    padding:5px 10px;
+  }
+}
+
+/* === РЕЖИМ ПЕЧАТИ === */
+@media print{
+  .nav-toggle,
+  .nav-menu,
+  .progress-container,
+  .progress-text{
+    display:none !important;
+  }
+  body{
+    background:white;
+    padding:0;
+  }
+  .section{
+    page-break-before:always;
+    margin:20px 0;
+    border-top:2px solid #000;
+  }
+  .content-placeholder{
+    border:1px solid #999;
+    min-height:80px;
+    background:white;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Прогресс-бар -->
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="progress-text" id="progressText">Прогресс: 0 / 0</div>
+
+<!-- Кнопка переключения меню -->
+<button class="nav-toggle" onclick="toggleMenu()" aria-label="Скрыть/показать меню">☰</button>
+
+<div class="nav-menu" id="navMenu">
+  <button class="nav-btn-main" data-target="tema0" onclick="goTo('tema0')">Content <span class="arrow">▶</span></button>
+  
+  <button class="nav-btn-main" data-target="tema1" onclick="toggleSubmenu('sub1', this)">1.1 <span class="arrow">▶</span></button>
+  <div id="sub1" class="nav-submenu">
+    <button class="nav-btn-sub" data-target="t1-1" onclick="goTo('t1-1')">1. Лексика</button>
+    <button class="nav-btn-sub" data-target="t1-2" onclick="goTo('t1-2')">2. Лексика (практ.)</button>
+    <button class="nav-btn-sub" data-target="t1-3" onclick="goTo('t1-3')">3. Чтение</button>
+    <button class="nav-btn-sub" data-target="t1-4" onclick="goTo('t1-4')">4. Грамм. (теор.)</button>
+    <button class="nav-btn-sub" data-target="t1-5" onclick="goTo('t1-5')">5. Грамм. (практ.)</button>
+    <button class="nav-btn-sub" data-target="t1-6" onclick="goTo('t1-6')">6. Аудирование</button>
+    <button class="nav-btn-sub" data-target="t1-7" onclick="goTo('t1-7')">7. Письмо</button>
+    <button class="nav-btn-sub" data-target="t1-8" onclick="goTo('t1-8')">8. Говорение</button>
+  </div>
+
+  <button class="nav-btn-main" data-target="tema2" onclick="toggleSubmenu('sub2', this)">1.2 <span class="arrow">▶</span></button>
+  <div id="sub2" class="nav-submenu">
+    <button class="nav-btn-sub" data-target="t2-1" onclick="goTo('t2-1')">1. Лексика</button>
+    <button class="nav-btn-sub" data-target="t2-2" onclick="goTo('t2-2')">2. Лексика (практ.)</button>
+    <button class="nav-btn-sub" data-target="t2-3" onclick="goTo('t2-3')">3. Чтение</button>
+    <button class="nav-btn-sub" data-target="t2-4" onclick="goTo('t2-4')">4. Грамм. (теор.)</button>
+    <button class="nav-btn-sub" data-target="t2-5" onclick="goTo('t2-5')">5. Грамм. (практ.)</button>
+    <button class="nav-btn-sub" data-target="t2-6" onclick="goTo('t2-6')">6. Аудирование</button>
+    <button class="nav-btn-sub" data-target="t2-7" onclick="goTo('t2-7')">7. Письмо</button>
+    <button class="nav-btn-sub" data-target="t2-8" onclick="goTo('t2-8')">8. Говорение</button>
+  </div>
+
+  <button class="nav-btn-main" data-target="tema3" onclick="toggleSubmenu('sub3', this)">1.3 <span class="arrow">▶</span></button>
+  <div id="sub3" class="nav-submenu">
+    <button class="nav-btn-sub" data-target="t3-1" onclick="goTo('t3-1')">1. Лексика</button>
+    <button class="nav-btn-sub" data-target="t3-2" onclick="goTo('t3-2')">2. Лексика (практ.)</button>
+    <button class="nav-btn-sub" data-target="t3-3" onclick="goTo('t3-3')">3. Чтение</button>
+    <button class="nav-btn-sub" data-target="t3-4" onclick="goTo('t3-4')">4. Грамм. (теор.)</button>
+    <button class="nav-btn-sub" data-target="t3-5" onclick="goTo('t3-5')">5. Грамм. (практ.)</button>
+    <button class="nav-btn-sub" data-target="t3-6" onclick="goTo('t3-6')">6. Аудирование</button>
+    <button class="nav-btn-sub" data-target="t3-7" onclick="goTo('t3-7')">7. Письмо</button>
+    <button class="nav-btn-sub" data-target="t3-8" onclick="goTo('t3-8')">8. Говорение</button>
+  </div>
+
+  <button class="nav-btn-main" data-target="tema4" onclick="toggleSubmenu('sub4', this)">1.4 <span class="arrow">▶</span></button>
+  <div id="sub4" class="nav-submenu">
+    <button class="nav-btn-sub" data-target="t4-1" onclick="goTo('t4-1')">1. Лексика</button>
+    <button class="nav-btn-sub" data-target="t4-2" onclick="goTo('t4-2')">2. Лексика (практ.)</button>
+    <button class="nav-btn-sub" data-target="t4-3" onclick="goTo('t4-3')">3. Чтение</button>
+    <button class="nav-btn-sub" data-target="t4-4" onclick="goTo('t4-4')">4. Грамм. (теор.)</button>
+    <button class="nav-btn-sub" data-target="t4-5" onclick="goTo('t4-5')">5. Грамм. (практ.)</button>
+    <button class="nav-btn-sub" data-target="t4-6" onclick="goTo('t4-6')">6. Аудирование</button>
+    <button class="nav-btn-sub" data-target="t4-7" onclick="goTo('t4-7')">7. Письмо</button>
+    <button class="nav-btn-sub" data-target="t4-8" onclick="goTo('t4-8')">8. Говорение</button>
+  </div>
+
+  <!-- Кнопка сброса прогресса -->
+  <div class="nav-divider"></div>
+  <button class="nav-btn-reset" onclick="clearProgress()">🔄 Сбросить ответы</button>
+</div>
+
+<script>
+  // === 1. АВТОСОХРАНЕНИЕ ПРОГРЕССА ===
+  const pageKey = 'eng_lesson_' + window.location.pathname;
+
+  function saveField(el){
+    const elId = el.id || el.name;
+    if (!elId) return;
+    let value = el.value;
+    if (el.type === 'checkbox' || el.type === 'radio') {
+      value = el.checked;
+    }
+    localStorage.setItem(pageKey + '_' + elId, JSON.stringify(value));
+  }
+
+  function restoreFields(){
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+      const elId = el.id || el.name;
+      if (!elId) return;
+      const saved = localStorage.getItem(pageKey + '_' + elId);
+      if (saved !== null) {
+        const value = JSON.parse(saved);
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          el.checked = value;
+        } else {
+          el.value = value;
+        }
+      }
+    });
+    updateProgress();
+  }
+
+  function clearProgress(){
+    if (!confirm('Вы уверены, что хотите очистить все ответы в этом уроке?')) return;
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith(pageKey)) {
+        localStorage.removeItem(key);
+      }
+    });
+    location.reload();
+  }
+
+  // === 2. ПРОГРЕСС-БАР ===
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+
+  function updateProgress(){
+  const fields = document.querySelectorAll('input, textarea, select');
+  if (fields.length === 0) {
+    progressText.textContent = 'Прогресс: 0 / 0';
+    progressBar.style.width = '0%';
+    return;
+  }
+  let filled = 0;
+  let total = 0;
+  const radioGroups = new Set();
+  const radioCorrectGroups = new Set();
+
+  fields.forEach(f => {
+    if (f.type === 'radio') {
+      // Для radio: считаем группы (по name), а не каждое поле
+      radioGroups.add(f.name);
+      if (f.checked && f.classList.contains('corr')) {
+        radioCorrectGroups.add(f.name);
+      }
+    } else if (f.type === 'checkbox') {
+      total++;
+      if (f.checked) filled++;
+    } else {
+      // input text, textarea, select
+      total++;
+      if (f.value && f.value.trim() !== '') filled++;
+    }
+  });
+
+  // Добавляем radio-группы в общий счёт
+  total += radioGroups.size;
+  filled += radioCorrectGroups.size;
+
+  const percent = total > 0 ? (filled / total) * 100 : 0;
+  progressBar.style.width = percent + '%';
+  progressText.textContent = 'Прогресс: ' + filled + ' / ' + total;
+}
+
+  // === 3. ПОДСВЕТКА АКТИВНОГО РАЗДЕЛА (scroll-based) ===
+  let ticking = false;
+
+  function updateActiveSection(){
+    // Собираем все элементы, на которые могут указывать кнопки меню
+    const allTargets = document.querySelectorAll('[id^="tema"], [id^="t"]');
+    let currentId = null;
+
+    // Порог: 35% от высоты экрана сверху
+    const threshold = window.innerHeight * 0.35;
+
+    allTargets.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      // Элемент считается активным, если его верхний край
+      // уже пересёк порог сверху
+      if (rect.top <= threshold) {
+        currentId = el.id;
+      }
+    });
+
+    if (currentId) {
+      highlightActiveButton(currentId);
+    }
+    ticking = false;
+  }
+
+  function highlightActiveButton(sectionId){
+    // Снимаем подсветку со всех кнопок
+    document.querySelectorAll('.nav-btn-main.current, .nav-btn-sub.current').forEach(btn => {
+      btn.classList.remove('current');
+    });
+    // Находим кнопку с соответствующим data-target и подсвечиваем
+    const btn = document.querySelector('[data-target="' + sectionId + '"]');
+    if (btn) {
+      btn.classList.add('current');
+
+      // Если это кнопка подтемы — автоматически раскрываем её подменю
+      if (btn.classList.contains('nav-btn-sub')) {
+        const parentSubmenu = btn.closest('.nav-submenu');
+        if (parentSubmenu && !parentSubmenu.classList.contains('open')) {
+          // Закрываем все остальные подменю
+          document.querySelectorAll('.nav-submenu').forEach(el => el.classList.remove('open'));
+          document.querySelectorAll('.nav-btn-main').forEach(el => el.classList.remove('active'));
+          // Открываем нужное
+          parentSubmenu.classList.add('open');
+          // Подсвечиваем родительскую кнопку темы
+          const parentBtn = parentSubmenu.previousElementSibling;
+          if (parentBtn && parentBtn.classList.contains('nav-btn-main')) {
+            parentBtn.classList.add('active');
+            parentBtn.classList.add('current');
+          }
+        }
+      }
+    }
+  }
+
+  // Throttled scroll listener для производительности
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateActiveSection);
+      ticking = true;
+    }
+  });
+
+  // === 4. НАВИГАЦИЯ ===
+  function toggleMenu(){
+    const menu = document.getElementById('navMenu');
+    const btn = document.querySelector('.nav-toggle');
+    const isMobile = window.innerWidth <= 768;
+
+    if(isMobile){
+      menu.classList.toggle('visible');
+      btn.textContent = menu.classList.contains('visible') ? '✕' : '☰';
+    } else {
+      menu.classList.toggle('hidden');
+      btn.textContent = menu.classList.contains('hidden') ? '☰' : '✕';
+    }
+  }
+
+  function toggleSubmenu(subId, btnElement){
+    document.querySelectorAll('.nav-submenu').forEach(el => {
+      if(el.id !== subId) el.classList.remove('open');
+    });
+    document.querySelectorAll('.nav-btn-main').forEach(el => {
+      if(el !== btnElement) el.classList.remove('active');
+    });
+
+    const submenu = document.getElementById(subId);
+    const isOpen = submenu.classList.contains('open');
+    
+    if(isOpen){
+      submenu.classList.remove('open');
+      btnElement.classList.remove('active');
+    } else {
+      submenu.classList.add('open');
+      btnElement.classList.add('active');
+    }
+  }
+
+  function goTo(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'});
+    if(window.innerWidth <= 768){
+      const menu = document.getElementById('navMenu');
+      menu.classList.remove('visible');
+      document.querySelector('.nav-toggle').textContent = '☰';
+    }
+  }
+
+  // === 5. ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ===
+  document.addEventListener('input', (e) => {
+  if (e.target.matches('input, textarea, select')) {
+    saveField(e.target);
+    updateProgress();
+  }
+});
+
+// Добавляем слушатель change для radio и checkbox
+document.addEventListener('change', (e) => {
+  if (e.target.matches('input[type="radio"], input[type="checkbox"]')) {
+    // Для radio: сохраняем состояние всей группы (все варианты с одинаковым name)
+    if (e.target.type === 'radio') {
+      const name = e.target.name;
+      document.querySelectorAll('input[type="radio"][name="' + name + '"]').forEach(r => {
+        saveField(r);
+      });
+    } else {
+      saveField(e.target);
+    }
+    updateProgress();
+  }
+});
+
+  window.addEventListener('DOMContentLoaded', () => {
+    restoreFields();
+    // Запускаем подсветку сразу после загрузки
+    updateActiveSection();
+  });
+</script>
+
+<div id="tema0" class="section"><h1>Содержание</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<!-- ================= ТЕМА 1.1 ================= -->
+<div id="tema1" class="section"><h1>Тема 1.1</h1></div>
+<!-- 1. Лексика -->
+<div id="t1-1" class="content-placeholder"></div>
+<!-- 2. Лексика (практика) -->
+<div id="t1-2" class="content-placeholder"></div>
+<!-- 3. Чтение -->
+<div id="t1-3" class="content-placeholder"></div>
+<!-- 4 Грамматика (теория)-->
+<div id="t1-4" class="content-placeholder"></div>
+<!-- 5 Грамматика (практика) -->
+<div id="t1-5" class="content-placeholder"></div>
+<!-- 6. Аудирование -->
+<div id="t1-6" class="content-placeholder"></div>
+<!-- 7. Письмо -->
+<div id="t1-7" class="content-placeholder"></div>
+<!-- 8. Говорение -->
+<div id="t1-8" class="content-placeholder"></div>
+
+<!-- ================= ТЕМА 1.2 ================= -->
+<div id="tema2" class="section"><h1>Тема 1.2</h1></div>
+<!-- 1. Лексика -->
+<div id="t2-1" class="content-placeholder"></div>
+<!-- 2. Лексика (практика) -->
+<div id="t2-2" class="content-placeholder"></div>
+<!-- 3. Чтение -->
+<div id="t2-3" class="content-placeholder"></div>
+<!-- 4 Грамматика (теория)-->
+<div id="t2-4" class="content-placeholder"></div>
+<!-- 5 Грамматика (практика) -->
+<div id="t2-5" class="content-placeholder"></div>
+<!-- 6. Аудирование -->
+<div id="t2-6" class="content-placeholder"></div>
+<!-- 7. Письмо -->
+<div id="t2-7" class="content-placeholder"></div>
+<!-- 8. Говорение -->
+<div id="t2-8" class="content-placeholder"></div>
+
+<!-- ================= ТЕМА 1.3 ================= -->
+<div id="tema3" class="section"><h1>Тема 1.3</h1></div>
+<!-- 1. Лексика -->
+<div id="t3-1" class="content-placeholder"></div>
+<!-- 2. Лексика (практика) -->
+<div id="t3-2" class="content-placeholder"></div>
+<!-- 3. Чтение -->
+<div id="t3-3" class="content-placeholder"></div>
+<!-- 4 Грамматика (теория)-->
+<div id="t3-4" class="content-placeholder"></div>
+<!-- 5 Грамматика (практика) -->
+<div id="t3-5" class="content-placeholder"></div>
+<!-- 6. Аудирование -->
+<div id="t3-6" class="content-placeholder"></div>
+<!-- 7. Письмо -->
+<div id="t3-7" class="content-placeholder"></div>
+<!-- 8. Говорение -->
+<div id="t3-8" class="content-placeholder"></div>
+
+<!-- ================= ТЕМА 1.4 ================= -->
+<div id="tema4" class="section"><h1>Тема 1.4</h1></div>
+<!-- 1. Лексика -->
+<div id="t4-1" class="content-placeholder"></div>
+<!-- 2. Лексика (практика) -->
+<div id="t4-2" class="content-placeholder"></div>
+<!-- 3. Чтение -->
+<div id="t4-3" class="content-placeholder"></div>
+<!-- 4 Грамматика (теория)-->
+<div id="t4-4" class="content-placeholder"></div>
+<!-- 5 Грамматика (практика) -->
+<div id="t4-5" class="content-placeholder"></div>
+<!-- 6. Аудирование -->
+<div id="t4-6" class="content-placeholder"></div>
+<!-- 7. Письмо -->
+<div id="t4-7" class="content-placeholder"></div>
+<!-- 8. Говорение -->
+<div id="t4-8" class="content-placeholder"></div>
+
+</body>
+</html>`} />
