@@ -1,0 +1,294 @@
+---
+title: 'News Learning: '
+description: 'Articles from CNN'
+---
+import InlineCode from '../../components/InlineCode.astro';
+
+<InlineCode code={`<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;padding:20px;position:relative}
+
+/* Кнопка-переключатель меню */
+.nav-toggle{
+  position:fixed;
+  right:20px;
+  top:20px;
+  z-index:1001;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#334155;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transition:all .25s ease;
+  line-height:1;
+}
+.nav-toggle:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+  transform:scale(1.05);
+}
+
+/* Сама панель меню */
+.nav-menu{
+  position:fixed;
+  right:20px;
+  top:80px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:#fff;
+  padding:16px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  border:1px solid #e2e8f0;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  transition:transform .3s ease, opacity .3s ease;
+  transform:translateX(0);
+  opacity:1;
+}
+
+/* Скрытое состояние меню */
+.nav-menu.hidden{
+  transform:translateX(calc(100% + 40px));
+  opacity:0;
+  pointer-events:none;
+}
+
+.nav-btn{
+  padding:8px 14px;
+  border:2px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:600;
+  color:#334155;
+  transition:all .2s;
+  white-space:nowrap;
+  text-align:left;
+  font-size:14px;
+}
+.nav-btn:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+}
+
+.section{scroll-margin-top:80px;margin:60px 0 40px 0;border:none;border-top:3px solid #e2e8f0;padding-top:40px}
+.section h1{font-size:42px;font-weight:800;color:#0f172a;margin:0 0 30px 0;text-align:center;letter-spacing:-0.5px}
+.content-placeholder{background:#fff;padding:30px;border-radius:12px;margin:20px 0;min-height:200px;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:16px}
+
+/* На мобильных меню по умолчанию скрыто */
+@media (max-width: 768px){
+  .nav-menu{
+    transform:translateX(calc(100% + 40px));
+    opacity:0;
+    pointer-events:none;
+  }
+  .nav-menu.visible{
+    transform:translateX(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .section h1{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- Кнопка переключения меню -->
+<button class="nav-toggle" onclick="toggleMenu()" aria-label="Скрыть/показать меню">☰</button>
+
+<div class="nav-menu" id="navMenu">
+  <button class="nav-btn" onclick="goTo('tema0')"> Content</button>
+  <button class="nav-btn" onclick="goTo('tema1')"> 1.1</button>
+  <button class="nav-btn" onclick="goTo('tema2')"> 1.2</button>
+  <button class="nav-btn" onclick="goTo('tema3')"> 1.3</button>
+  <button class="nav-btn" onclick="goTo('tema4')"> 1.4</button>
+  <button class="nav-btn" onclick="goTo('tema5')"> 2.1</button>
+  <button class="nav-btn" onclick="goTo('tema6')"> 2.2</button>
+  <button class="nav-btn" onclick="goTo('tema7')"> 2.3</button>
+  <button class="nav-btn" onclick="goTo('tema8')"> 2.4</button>
+  <button class="nav-btn" onclick="goTo('tema9')"> 3.1</button>
+  <button class="nav-btn" onclick="goTo('tema10')"> 3.2</button>
+  <button class="nav-btn" onclick="goTo('tema11')"> 3.3</button>
+  <button class="nav-btn" onclick="goTo('tema12')"> 3.4</button>
+  <button class="nav-btn" onclick="goTo('tema13')"> 4.1</button>
+  <button class="nav-btn" onclick="goTo('tema14')"> 4.2</button>
+  <button class="nav-btn" onclick="goTo('tema15')"> 4.3</button>
+  <button class="nav-btn" onclick="goTo('tema16')"> 4.4</button>
+</div>
+
+<script>
+  function toggleMenu(){
+    const menu = document.getElementById('navMenu');
+    const btn = document.querySelector('.nav-toggle');
+    const isMobile = window.innerWidth <= 768;
+
+    if(isMobile){
+      menu.classList.toggle('visible');
+      btn.textContent = menu.classList.contains('visible') ? '✕' : '☰';
+    } else {
+      menu.classList.toggle('hidden');
+      btn.textContent = menu.classList.contains('hidden') ? '☰' : '✕';
+    }
+  }
+
+  function goTo(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'});
+    // На мобильных автоматически сворачиваем меню после выбора
+    if(window.innerWidth <= 768){
+      const menu = document.getElementById('navMenu');
+      menu.classList.remove('visible');
+      document.querySelector('.nav-toggle').textContent = '☰';
+    }
+  }
+</script>
+
+
+<!-- ================= ТЕМА 1.1 ================= -->
+<div id="tema1" class="section"><h1>Тема 1.1</h1></div>
+<!-- 1. Vocabulary -->
+<!-- 1.1 Vocabulary Study -->
+<!-- 1.2 Vocabulary Practice -->
+<!-- 2. Reading -->
+<!-- 3.1 Grammar -->
+<!-- 3.2 Grammar Practice -->
+<!-- 4. Listening -->
+<!-- 5. Письмо -->
+<div class="content-placeholder"><style>body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f0f2f5;padding:10px;margin:0;font-size:13px}.task-container{max-width:700px;margin:0 auto;background:#fff;border:2px solid #e0e0e0;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.task-header{background:#fff3e0;padding:15px 20px;border-bottom:2px solid #ffb74d}.task-header h2{margin:0;color:#e65100;font-size:18px;display:flex;align-items:center;gap:8px}.task-body{padding:20px}.instruction{background:#e3f2fd;border-left:4px solid #2196f3;padding:15px;margin-bottom:20px;border-radius:0 8px 8px 0;font-size:14px;line-height:1.6;color:#1565c0}.email-container{background:#f5f5f5;border:1px solid #ddd;border-radius:8px;margin-bottom:20px;overflow:hidden}.email-header{background:#e8eaf6;padding:12px 15px;border-bottom:1px solid #ddd}.email-header h3{margin:0 0 8px 0;font-size:15px;color:#333}.email-meta{display:grid;grid-template-columns:auto 1fr;gap:3px 15px;font-size:13px}.email-meta-label{font-weight:bold;color:#555}.email-body{padding:15px;line-height:1.6;color:#444;background:#fff}.wrap{margin-top:20px}h4{margin:0 0 15px 0;color:#2c3e50;font-size:18px;border-bottom:2px solid #3498db;padding-bottom:8px}textarea{width:100%;min-height:350px;padding:15px;font-size:15px;line-height:1.6;border:2px solid #ccc;border-radius:6px;resize:vertical;font-family:Georgia,serif;transition:border-color 0.3s}textarea:focus{outline:none;border-color:#3498db}.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:15px;padding-top:15px;border-top:1px solid #eee}.stat{font-size:14px;color:#555;margin-right:auto}.warn{color:#c0392b;font-weight:bold}.ok{color:#27ae60;font-weight:bold}button{padding:10px 18px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.3s}.copy{background:#27ae60;color:#fff}.copy:hover{background:#1e8449}.download{background:#3498db;color:#fff}.download:hover{background:#2980b9}.clear{background:#e74c3c;color:#fff}.clear:hover{background:#c0392b}.example-section{background:#fafafa;border-top:3px solid #90caf9;margin-top:25px;padding-top:20px}.response-letter{border:2px solid #90caf9;border-radius:10px;overflow:hidden;background:#fff}.response-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:12px 15px;font-weight:bold;font-size:14px;display:flex;align-items:center;gap:8px}summary{cursor:pointer;padding:12px 15px;background:#f5f5f5;font-weight:bold;font-size:13px;border-bottom:1px solid #eee;list-style:none;display:flex;align-items:center;transition:background 0.2s}summary:hover{background:#e8e8e8}summary::before{content:"▶";margin-right:8px;font-size:10px;transition:transform 0.2s}details[open] summary::before{content:"▼";transform:rotate(0deg)}.response-content{padding:15px;line-height:1.6;background:#fff;font-size:13px}.response-content p{margin:0 0 10px 0}</style><div class="task-container"><div class="task-header"><h2>📝 Writing Task: Email to Tom</h2></div><div class="task-body"><div class="instruction">Imagine that you received an email from your English-speaking pen-friend Tom. Write him a reply email and answer his 3 questions. Write <b>100–120 words</b>. Remember the rules of email writing.</div><div class="email-container"><div class="email-header"><h3>📧 From: Tom@friend.uk</h3><div class="email-meta"><span class="email-meta-label">To:</span><span>Friend@mail.ru</span><span class="email-meta-label">Subject:</span><span>Family</span></div></div><div class="email-body"><p>...I have a big family and I love spending time with them. We have family dinners every Sunday. Do you have a big or small family? Who are you closest to in your family? What do you usually do together with your relatives?</p></div></div><div class="wrap"><h4>Your answer</h4><textarea id="essay" placeholder="Type your email here (100–120 words)..."></textarea><div class="ctrl"><div class="stat" id="stat">Words: 0 / 100–120 | Characters: 0</div><button class="copy" onclick="copyText()"> Copy</button><button class="download" onclick="downloadText()">💾 Download .txt</button><button class="clear" onclick="clearText()">🗑 Clear</button></div></div><div class="example-section"><div class="response-letter"><div class="response-header">✅ Пример ответного письма</div><details><summary>❓ Текст ответа (Masha)</summary><div class="response-content"><p><b>Hello Tom,</b></p><p>Thank you for your letter! I have a small family — just my parents and my younger sister. I'm closest to my mum because we share the same interests. We often cook together and watch films in the evening. On weekends, our family goes for walks in the park or visits our grandparents. They live nearby, so we see them quite often. I really enjoy spending time with my sister too — we play board games and talk about everything.</p><p><b>Best wishes,<br>Masha</b></p></div></details></div></div></div></div><script>const t=document.getElementById('essay'),s=document.getElementById('stat');const KEY='essay_answer';t.value=localStorage.getItem(KEY)||'';function upd(){const txt=t.value.trim();const w=txt?txt.split(/\s+/).length:0;const c=t.value.length;let msg='Words: '+w+' / 100–120 | Characters: '+c;if(w>0&&w<100)msg+=' <span class="warn">(too short)</span>';else if(w>=100&&w<=120)msg+=' <span class="ok">✓ Good length!</span>';else if(w>120)msg+=' <span class="warn">(too long)</span>';s.innerHTML=msg;localStorage.setItem(KEY,t.value)}t.addEventListener('input',upd);upd();function copyText(){navigator.clipboard.writeText(t.value).then(()=>{alert('Copied to clipboard!')})}function downloadText(){const b=new Blob([t.value],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='essay.txt';a.click()}function clearText(){if(confirm('Clear your essay?')){t.value='';upd()}}</script></div>
+
+
+<div id="tema2" class="section"><h1>Тема 1.2</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema3" class="section"><h1>Тема 1.3</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema4" class="section"><h1>Тема 1.4</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema5" class="section"><h1>Тема 2.1</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema6" class="section"><h1>Тема 2.2</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema7" class="section"><h1>Тема 2.3</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema8" class="section"><h1>Тема 2.4</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema9" class="section"><h1>Тема 3.1</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema10" class="section"><h1>Тема 3.2</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema11" class="section"><h1>Тема 3.3</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema12" class="section"><h1>Тема 3.4</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema13" class="section"><h1>Тема 4.1</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema14" class="section"><h1>Тема 4.2</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema15" class="section"><h1>Тема 4.3</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+<div id="tema16" class="section"><h1>Тема 4.4</h1></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+<div class="content-placeholder"></div>
+
+</body>
+</html>`} />
