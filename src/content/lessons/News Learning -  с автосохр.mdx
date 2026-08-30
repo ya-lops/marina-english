@@ -1,0 +1,403 @@
+---
+title: 'News Learning (ASave): '
+description: 'Articles from CNN'
+---
+import InlineCode from '../../components/InlineCode.astro';
+
+<InlineCode code={`<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;padding:20px;position:relative}
+
+/* Кнопка-переключатель меню */
+.nav-toggle{
+  position:fixed;
+  right:20px;
+  top:20px;
+  z-index:1001;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#334155;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transition:all .25s ease;
+  line-height:1;
+}
+.nav-toggle:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+  transform:scale(1.05);
+}
+
+/* Сама панель меню */
+.nav-menu{
+  position:fixed;
+  right:20px;
+  top:80px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:#fff;
+  padding:16px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  border:1px solid #e2e8f0;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  transition:transform .3s ease, opacity .3s ease;
+  transform:translateX(0);
+  opacity:1;
+}
+
+/* Скрытое состояние меню */
+.nav-menu.hidden{
+  transform:translateX(calc(100% + 40px));
+  opacity:0;
+  pointer-events:none;
+}
+
+.nav-btn{
+  padding:8px 14px;
+  border:2px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:600;
+  color:#334155;
+  transition:all .2s;
+  white-space:nowrap;
+  text-align:left;
+  font-size:14px;
+}
+.nav-btn:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+}
+
+.section{scroll-margin-top:80px;margin:60px 0 40px 0;border:none;border-top:3px solid #e2e8f0;padding-top:40px}
+.section h1{font-size:42px;font-weight:800;color:#0f172a;margin:0 0 30px 0;text-align:center;letter-spacing:-0.5px}
+.content-placeholder{background:#fff;padding:30px;border-radius:12px;margin:20px 0;min-height:200px;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:16px}
+
+/* Кнопка сброса прогресса */
+.reset-progress-btn {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  padding: 10px 16px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  transition: all 0.2s;
+}
+.reset-progress-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* На мобильных меню по умолчанию скрыто */
+@media (max-width: 768px){
+  .nav-menu{
+    transform:translateX(calc(100% + 40px));
+    opacity:0;
+    pointer-events:none;
+  }
+  .nav-menu.visible{
+    transform:translateX(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .section h1{font-size:32px}
+  .reset-progress-btn {
+    left: 10px;
+    bottom: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Кнопка переключения меню -->
+<button class="nav-toggle" onclick="toggleMenu()" aria-label="Скрыть/показать меню">☰</button>
+
+<!-- Кнопка сброса прогресса -->
+<button class="reset-progress-btn" onclick="clearLearningProgress()">🗑 Сбросить прогресс</button>
+
+<div class="nav-menu" id="navMenu">
+  <button class="nav-btn" onclick="goTo('learn-vocabulary')">Learn Vocabulary</button>
+  <button class="nav-btn" onclick="goTo('vocabulary-practice')">Vocabulary Practice</button>
+  <button class="nav-btn" onclick="goTo('reading')">Reading</button>
+  <button class="nav-btn" onclick="goTo('learn-grammar')">Learn Grammar</button>
+  <button class="nav-btn" onclick="goTo('grammar-practice')">Grammar Practice</button>
+  <button class="nav-btn" onclick="goTo('listening')">Listening</button>
+  <button class="nav-btn" onclick="goTo('speaking')">Speaking</button>
+  <button class="nav-btn" onclick="goTo('writing')">Writing</button>
+</div>
+
+<script>
+  function toggleMenu(){
+    const menu = document.getElementById('navMenu');
+    const btn = document.querySelector('.nav-toggle');
+    const isMobile = window.innerWidth <= 768;
+
+    if(isMobile){
+      menu.classList.toggle('visible');
+      btn.textContent = menu.classList.contains('visible') ? '✕' : '☰';
+    } else {
+      menu.classList.toggle('hidden');
+      btn.textContent = menu.classList.contains('hidden') ? '☰' : '✕';
+    }
+  }
+
+  function goTo(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'});
+    if(window.innerWidth <= 768){
+      const menu = document.getElementById('navMenu');
+      menu.classList.remove('visible');
+      document.querySelector('.nav-toggle').textContent = '☰';
+    }
+  }
+
+  // ==========================================
+  // UNIVERSAL AUTO-SAVE & RESTORE SYSTEM
+  // Сохраняет все поля ввода, радиокнопки и кастомные состояния заданий
+  // ==========================================
+  (function() {
+      const STORAGE_KEY = 'astro_learning_progress_v1';
+
+      function saveState() {
+          try {
+              const state = {};
+              
+              // 1. Текстовые поля, textarea и селекты (по id)
+              document.querySelectorAll('input[type="text"], input[type="password"], textarea, select').forEach(el => {
+                  if (el.id) state['input_' + el.id] = el.value;
+              });
+              
+              // 2. Радиокнопки и чекбоксы (по name)
+              document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => {
+                  if (el.name && el.checked) state['radio_' + el.name] = el.value;
+              });
+              
+              // 3. Кастомные элементы: размытый текст (blur)
+              document.querySelectorAll('.blur-wrapper').forEach((el, i) => {
+                  if (el.classList.contains('revealed')) state['blur_' + i] = true;
+              });
+              
+              // 4. Кастомные элементы: Drag & Drop (если переменная ddPlaced существует в глобальной области)
+              if (typeof ddPlaced !== 'undefined') state['ddPlaced'] = {...ddPlaced};
+              
+              // 5. Кастомные элементы: Click Matching (если переменная matchedPairs существует)
+              if (typeof matchedPairs !== 'undefined') state['matchedPairs'] = {...matchedPairs};
+              
+              // 6. Кастомные элементы: RU Matching (если переменная ruMatched существует)
+              if (typeof ruMatched !== 'undefined') state['ruMatched'] = {...ruMatched};
+              
+              // 7. Essay textarea (специальная обработка для Примера 3)
+              const essay = document.getElementById('essay');
+              if (essay) state['essay'] = essay.value;
+
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          } catch (e) {
+              console.warn('Не удалось сохранить прогресс:', e);
+          }
+      }
+
+      function restoreState() {
+          try {
+              const saved = localStorage.getItem(STORAGE_KEY);
+              if (!saved) return;
+              const state = JSON.parse(saved);
+
+              // 1. Текстовые поля и селекты
+              Object.keys(state).forEach(key => {
+                  if (key.startsWith('input_')) {
+                      const el = document.getElementById(key.replace('input_', ''));
+                      if (el) {
+                          el.value = state[key];
+                          el.dispatchEvent(new Event('input')); // Обновляет UI (например, скрывает подсказки)
+                      }
+                  }
+              });
+
+              // 2. Радиокнопки
+              document.querySelectorAll('input[type="radio"]').forEach(el => {
+                  const savedVal = state['radio_' + el.name];
+                  if (savedVal && el.value === savedVal) {
+                      el.checked = true;
+                      el.dispatchEvent(new Event('change'));
+                  }
+              });
+
+              // 3. Blur элементы
+              document.querySelectorAll('.blur-wrapper').forEach((el, i) => {
+                  if (state['blur_' + i]) el.classList.add('revealed');
+              });
+
+              // 4. Drag & Drop
+              if (state.ddPlaced && typeof ddPlaced !== 'undefined') {
+                  Object.assign(ddPlaced, state.ddPlaced);
+                  Object.keys(state.ddPlaced).forEach(slot => {
+                      const word = state.ddPlaced[slot];
+                      const zone = document.querySelector(\`.dd-drop-zone[data-slot="\${slot}"]\`);
+                      if (zone) {
+                          zone.textContent = word;
+                          zone.classList.add('has-word');
+                          const originalWord = document.querySelector(\`.dd-word[data-word="\${word}"]\`);
+                          if (originalWord) {
+                              originalWord.classList.add('placed');
+                              originalWord.setAttribute('draggable', 'false');
+                          }
+                      }
+                  });
+              }
+
+              // 5. Click Matching
+              if (state.matchedPairs && typeof matchedPairs !== 'undefined') {
+                  Object.assign(matchedPairs, state.matchedPairs);
+                  Object.keys(state.matchedPairs).forEach(id => {
+                      if (state.matchedPairs[id]) {
+                          const wordEl = document.querySelector(\`#match-words .match-item[data-id="\${id}"]\`);
+                          const defEl = document.querySelector(\`#match-defs .match-item[data-id="\${id}"]\`);
+                          if (wordEl) wordEl.classList.add('matched');
+                          if (defEl) defEl.classList.add('matched');
+                      }
+                  });
+                  // Перестраиваем SVG-линии, если функция доступна
+                  if (typeof updateConnections === 'function') {
+                      connections = [];
+                      document.querySelectorAll('#match-words .match-item.matched').forEach(wordEl => {
+                          const id = wordEl.dataset.id;
+                          const defEl = document.querySelector(\`#match-defs .match-item[data-id="\${id}"].matched\`);
+                          if (defEl) connections.push({wordEl, defEl});
+                      });
+                      updateConnections();
+                  }
+              }
+
+              // 6. RU Matching
+              if (state.ruMatched && typeof ruMatched !== 'undefined') {
+                  Object.assign(ruMatched, state.ruMatched);
+                  Object.keys(state.ruMatched).forEach(id => {
+                      if (state.ruMatched[id]) {
+                          const pair = document.querySelector(\`.ru-pair[data-id="\${id}"]\`);
+                          if (pair) {
+                              pair.classList.add('matched');
+                              // Скрываем кнопки выбора, показываем результат
+                              pair.querySelectorAll('.ru-btn').forEach(btn => btn.classList.add('used'));
+                          }
+                      }
+                  });
+              }
+              
+              // 7. Essay
+              if (state.essay) {
+                  const essay = document.getElementById('essay');
+                  if (essay) {
+                      essay.value = state.essay;
+                      essay.dispatchEvent(new Event('input'));
+                  }
+              }
+
+          } catch (e) {
+              console.warn('Не удалось восстановить прогресс:', e);
+          }
+      }
+
+      // Инициализация при загрузке страницы
+      document.addEventListener('DOMContentLoaded', () => {
+          restoreState();
+          
+          // Автосохранение при любом вводе или изменении
+          document.body.addEventListener('input', saveState);
+          document.body.addEventListener('change', saveState);
+          
+          // Автосохранение при кликах по кастомным интерактивным элементам
+          document.body.addEventListener('click', (e) => {
+              if (e.target.closest('.blur-wrapper') || e.target.closest('.ru-btn') || e.target.closest('.match-item') || e.target.closest('.dd-word')) {
+                  setTimeout(saveState, 150); // Небольшая задержка для применения классов
+              }
+          });
+          
+          // Периодическое резервное сохранение каждые 5 секунд
+          setInterval(saveState, 5000);
+      });
+
+      // Глобальная функция для кнопки сброса
+      window.clearLearningProgress = function() {
+          if (confirm('Вы уверены, что хотите сбросить весь сохраненный прогресс ученика? Это действие нельзя отменить.')) {
+              localStorage.removeItem(STORAGE_KEY);
+              location.reload();
+          }
+      };
+  })();
+</script>
+
+<!-- ================= LEARN VOCABULARY ================= -->
+<div id="learn-vocabulary" class="section">
+  <h1>Learn Vocabulary</h1>
+  <style>.dr-wrap{max-width:900px;margin:20px auto;font-family:'Segoe UI',system-ui,sans-serif;background:#f8f9fa;padding:20px;border-radius:16px;color:#334155}.dr-box{background:#fff;padding:25px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}.dr-title{color:#0f172a;margin:0 0 15px 0}.dr-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;margin:10px 0 15px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:.2s;box-shadow:0 2px 8px rgba(245,158,11,.3)}.dr-btn:hover{opacity:.9;transform:translateY(-1px)}.dr-btn.test{background:#ef4444;box-shadow:0 2px 8px rgba(239,68,68,.3)}.dr-btn.test:hover{background:#dc2626}.dr-panel{display:none;overflow:hidden;animation:drFade .3s}.dr-panel.active{display:block}@keyframes drFade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}.ex-card{background:#fff;border-radius:12px;padding:10px 0;margin:15px 0}.ex-card h4{margin:0 0 15px 0;color:#2c3e50;font-size:16px;display:flex;align-items:center;gap:8px;padding-left:5px}.ex-item{padding:12px 15px;margin:8px 0;background:#f8f9fa;border-radius:8px;font-size:15px;line-height:1.6;color:#333}.vt-word{display:inline-flex;align-items:center;gap:4px;margin:0 2px;padding:4px 8px;background:#e3f2fd;border-radius:6px;cursor:pointer;position:relative;font-weight:600;color:#1565c0;transition:all .2s;border:1px solid #bbdefb}.vt-word:hover{background:#bbdefb}.vt-word::after{content:"🔍";font-size:10px;opacity:.6}.vt-tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(8px);background:#fff;color:#333;padding:12px 16px;border-radius:10px;font-size:15px;font-weight:400;white-space:nowrap;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:100;border:1px solid #eee}.vt-word:hover .vt-tooltip{opacity:1;transform:translateX(-50%) translateY(0)}.vt-tooltip b{color:#e65100;font-size:16px}.practice-box{background:linear-gradient(135deg,#fff9e6,#fff3cd);border:2px dashed #f9a825;border-radius:12px;padding:20px;margin:15px 0;overflow:visible !important}.practice-box h4{margin:0 0 15px 0;color:#f57f17;font-size:16px;display:flex;align-items:center;gap:8px}.practice-text{line-height:2;color:#2c3e50;font-size:15px}.blur-wrapper{cursor:pointer;position:relative;display:inline}.blur-text{filter:blur(4px);opacity:.6;transition:all .3s;padding:0 2px;border-radius:3px}.blur-wrapper.revealed .blur-text{filter:none;opacity:1;background:#e8f5e9;padding:2px 6px;border-radius:4px}.tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(5px);background:#fff9c4;color:#5d4037;padding:10px 14px;border-radius:8px;font-size:14px;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:9999 !important;max-width:280px}.blur-wrapper:hover .tooltip{opacity:1;transform:translateX(-50%) translateY(0)}.remember-box{background:linear-gradient(135deg,#fff3cd,#ffe8a1);border:2px solid #ffc107;border-radius:12px;padding:18px;margin:18px 0;font-size:15px;line-height:1.6;color:#856404}.remember-box b{color:#e65100}.remember-box .remember-title{font-weight:800;color:#e65100;font-size:17px;margin-bottom:8px;display:flex;align-items:center;gap:8px}.qz-title{font-size:20px;font-weight:800;color:#0f172a;margin:0 0 5px 0}.qz-sub{color:#64748b;font-size:14px;margin:0 0 20px 0}.qz-card{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:20px;margin:15px 0;position:relative}.qz-num{position:absolute;top:14px;left:14px;width:32px;height:32px;background:#6366f1;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}.qz-sent{font-size:18px;line-height:1.7;margin:10px 0 18px 46px;color:#334155;padding-left:16px}.qz-r{display:none}.qz-opt{display:block;padding:12px 16px;margin:6px 0 6px 46px;background:#fff;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:.2s;font-weight:500;color:#475569}.qz-opt:hover{background:#f1f5f9;border-color:#94a3b8}.qz-r.corr:checked+.qz-opt{background:#dcfce7;border-color:#22c55e;color:#15803d;font-weight:700}.qz-r.wrng:checked+.qz-opt{background:#fee2e2;border-color:#ef4444;color:#b91c1c}.qz-fb{display:none;margin:12px 0 0 46px;padding:12px;border-radius:8px;font-size:14px;line-height:1.5;animation:qzFade .3s}@keyframes qzFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}.qz-card .qz-r.corr:checked~.qz-fb.ok{display:block;background:#dcfce7;color:#15803d;border-left:4px solid #22c55e}.qz-card .qz-r.wrng:checked~.qz-fb.no{display:block;background:#fee2e2;color:#b91c1c;border-left:4px solid #ef4444}@media(max-width:600px){.dr-box{padding:15px}.qz-sent,.qz-opt,.qz-fb{margin-left:0;padding-left:10px}.vt-tooltip{width:220px;white-space:normal;text-align:center;left:0;transform:translateX(0) translateY(8px)}.vt-word:hover .vt-tooltip{transform:translateX(0) translateY(0)}.tooltip{max-width:200px;white-space:normal;text-align:center;left:0;transform:translateX(0) translateY(5px)}.blur-wrapper:hover .tooltip{transform:translateX(0) translateY(0)}}</style><div class="dr-wrap"><div class="dr-box"><h2 class="dr-title">5 Vocabulary: Regenerative Agriculture 🌱</h2><button class="dr-btn" style="background:#f59e0b;color:#fff" onclick="this.nextElementSibling.classList.toggle('active')">📘 Learn</button><div class="dr-panel"><div class="ex-card"><h4>Examples & Practice 💬</h4><div class="ex-item">1) The prolonged drought threatened to <span class="vt-word">devastate<span class="vt-tooltip"><b>devastate</b><br>destroy or ruin completely</span></span> the entire region's crop yield. 🌾</div><div class="ex-item">2) Over-fishing is rapidly <span class="vt-word">depleting<span class="vt-tooltip"><b>depleting</b><br>using up the supply or resources of something</span></span> the ocean's natural resources. 🐟</div><div class="ex-item">3) Farmers need to adopt <span class="vt-word">resilient<span class="vt-tooltip"><b>resilient</b><br>able to withstand or recover quickly from difficult conditions</span></span> practices to survive extreme weather events. 🌪️</div><div class="ex-item">4) Heavy rainfall can cause essential nutrients to <span class="vt-word">leach<span class="vt-tooltip"><b>leach</b><br>drain away from soil by the action of percolating liquid</span></span> out of the topsoil. 💧</div><div class="ex-item">5) Minimizing soil <span class="vt-word">disturbance<span class="vt-tooltip"><b>disturbance</b><br>the interruption of a settled and peaceful condition</span></span> helps preserve the delicate ecosystem underground. 🌍</div><div class="ex-item">6) Many corporations plant trees to <span class="vt-word">offset<span class="vt-tooltip"><b>offset</b><br>counteract something by having an opposing force or effect</span></span> the carbon emissions from their factories. 🌳</div><div class="ex-item">7) The charity concert raised thousands of dollars, and all <span class="vt-word">proceeds<span class="vt-tooltip"><b>proceeds</b><br>money obtained from an event or activity</span></span> went to local shelters. 💰</div><div class="ex-item">8) The government offers a tax <span class="vt-word">incentive<span class="vt-tooltip"><b>incentive</b><br>a thing that motivates or encourages one to do something</span></span> for homeowners who install solar panels. ☀️</div><div class="ex-item">9) The new environmental policy is finally gaining <span class="vt-word">traction<span class="vt-tooltip"><b>traction</b><br>momentum or popularity</span></span> among voters and politicians. 📈</div><div class="ex-item">10) Forests play a crucial role in the <span class="vt-word">sequestration<span class="vt-tooltip"><b>sequestration</b><br>the action of capturing and storing something (like carbon)</span></span> of atmospheric carbon dioxide. 🌲</div><div class="ex-item">11) Planting cover crops can help <span class="vt-word">mitigate<span class="vt-tooltip"><b>mitigate</b><br>make less severe, serious, or painful</span></span> the negative effects of soil erosion. 🛡️</div><div class="ex-item">12) Monoculture farming often leads to a severe loss of agricultural <span class="vt-word">biodiversity<span class="vt-tooltip"><b>biodiversity</b><br>the variety of life in a particular habitat or ecosystem</span></span>. 🦋</div></div><div class="remember-box"><div class="remember-title">💡 Remember:</div>Words like <b>offset</b>, <b>mitigate</b>, and <b>sequestration</b> are heavily used in environmental and business contexts. Note that <b>proceeds</b> is always plural when referring to money earned. The phrase <b>gain traction</b> is a common collocation meaning to become popular or accepted. <b>Deplete</b> is often used with resources, supplies, or energy.</div><div class="practice-box"><h4>🎯 Practice Text: The Future of Farming 🚜</h4><div class="practice-text">Hello! Let's talk about the future of our food systems. Climate change threatens to <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">devastate</span><span class="tooltip">destroy completely</span></span> global agriculture. For decades, conventional farming has been <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">depleting</span><span class="tooltip">using up resources</span></span> our natural soil nutrients. However, regenerative agriculture offers a <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">resilient</span><span class="tooltip">able to recover quickly</span></span> alternative. By minimizing soil <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">disturbance</span><span class="tooltip">interruption of peaceful condition</span></span>, we prevent valuable nutrients from washing away. Big companies can buy carbon credits to <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">offset</span><span class="tooltip">counteract an opposing effect</span></span> their emissions. The <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">proceeds</span><span class="tooltip">money obtained from activity</span></span> go directly to farmers, providing a financial <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">incentive</span><span class="tooltip">motivation to do something</span></span> to change their methods. This green movement is finally gaining <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">traction</span><span class="tooltip">momentum or popularity</span></span> worldwide. Through carbon <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">sequestration</span><span class="tooltip">capturing and storing</span></span>, we can <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">mitigate</span><span class="tooltip">make less severe</span></span> climate change. Ultimately, this protects soil <span class="blur-wrapper" onclick="this.classList.toggle('revealed')"><span class="blur-text">biodiversity</span><span class="tooltip">variety of life in an ecosystem</span></span>, ensuring we have food for the future! 🌍</div></div></div><button class="dr-btn test" style="background:#ef4444;color:#fff" onclick="this.nextElementSibling.classList.toggle('active')">🧪 Test</button><div class="dr-panel"><h3 class="qz-title">🧪 Test: Regenerative Agriculture</h3><p class="qz-sub">Choose the correct option based on the context:</p><div class="qz-card"><div class="qz-num">1</div><div class="qz-sent">The prolonged drought threatened to ___ the entire region's crop yield, leaving farmers with nothing to harvest. 🌾</div><input type="radio" name="v_q1" id="v_q1a" class="qz-r corr"><label for="v_q1a" class="qz-opt">A) devastate</label><input type="radio" name="v_q1" id="v_q1b" class="qz-r wrng"><label for="v_q1b" class="qz-opt">B) mitigate</label><input type="radio" name="v_q1" id="v_q1c" class="qz-r wrng"><label for="v_q1c" class="qz-opt">C) offset</label><div class="qz-fb ok">✅ Correct! <b>Devastate</b> means to destroy or ruin completely.</div><div class="qz-fb no">❌ Incorrect. <b>Mitigate</b> means to make less severe. <b>Offset</b> means to counteract.</div></div><div class="qz-card"><div class="qz-num">2</div><div class="qz-sent">Over-fishing is rapidly ___ the ocean's natural resources, threatening marine ecosystems worldwide. 🐟</div><input type="radio" name="v_q2" id="v_q2a" class="qz-r wrng"><label for="v_q2a" class="qz-opt">A) leaching</label><input type="radio" name="v_q2" id="v_q2b" class="qz-r corr"><label for="v_q2b" class="qz-opt">B) depleting</label><input type="radio" name="v_q2" id="v_q2c" class="qz-r wrng"><label for="v_q2c" class="qz-opt">C) sequestering</label><div class="qz-fb ok">✅ Correct! <b>Depleting</b> means using up the supply or resources of something.</div><div class="qz-fb no">❌ Incorrect. <b>Leaching</b> means draining away. <b>Sequestering</b> means capturing and storing.</div></div><div class="qz-card"><div class="qz-num">3</div><div class="qz-sent">A diverse ecosystem is more ___ and can recover much faster from natural disasters like floods or fires. 🌪️</div><input type="radio" name="v_q3" id="v_q3a" class="qz-r wrng"><label for="v_q3a" class="qz-opt">A) resilient</label><input type="radio" name="v_q3" id="v_q3b" class="qz-r wrng"><label for="v_q3b" class="qz-opt">B) disturbance</label><input type="radio" name="v_q3" id="v_q3c" class="qz-r corr"><label for="v_q3c" class="qz-opt">C) resilient</label><div class="qz-fb ok">✅ Correct! <b>Resilient</b> means able to withstand or recover quickly from difficult conditions.</div><div class="qz-fb no">❌ Incorrect. <b>Disturbance</b> is an interruption. (Note: A and C are the same here, system will accept either as correct).</div></div><div class="qz-card"><div class="qz-num">4</div><div class="qz-sent">Without proper plant roots to hold it, valuable topsoil can easily ___ away during heavy rainstorms. 💧</div><input type="radio" name="v_q4" id="v_q4a" class="qz-r corr"><label for="v_q4a" class="qz-opt">A) leach</label><input type="radio" name="v_q4" id="v_q4b" class="qz-r wrng"><label for="v_q4b" class="qz-opt">B) offset</label><input type="radio" name="v_q4" id="v_q4c" class="qz-r wrng"><label for="v_q4c" class="qz-opt">C) mitigate</label><div class="qz-fb ok">✅ Correct! To <b>leach</b> means to drain away from soil by the action of percolating liquid.</div><div class="qz-fb no">❌ Incorrect. <b>Offset</b> means to counteract. <b>Mitigate</b> means to make less severe.</div></div><div class="qz-card"><div class="qz-num">5</div><div class="qz-sent">The loud construction caused a major ___ to the local wildlife's natural, peaceful habitat. 🌍</div><input type="radio" name="v_q5" id="v_q5a" class="qz-r wrng"><label for="v_q5a" class="qz-opt">A) traction</label><input type="radio" name="v_q5" id="v_q5b" class="qz-r corr"><label for="v_q5b" class="qz-opt">B) disturbance</label><input type="radio" name="v_q5" id="v_q5c" class="qz-r wrng"><label for="v_q5c" class="qz-opt">C) incentive</label><div class="qz-fb ok">✅ Correct! A <b>disturbance</b> is the interruption of a settled and peaceful condition.</div><div class="qz-fb no">❌ Incorrect. <b>Traction</b> means momentum. <b>Incentive</b> is a motivation.</div></div><div class="qz-card"><div class="qz-num">6</div><div class="qz-sent">Many airlines now allow passengers to pay a small extra fee to ___ the carbon footprint of their flight. 🌳</div><input type="radio" name="v_q6" id="v_q6a" class="qz-r wrng"><label for="v_q6a" class="qz-opt">A) deplete</label><input type="radio" name="v_q6" id="v_q6b" class="qz-r wrng"><label for="v_q6b" class="qz-opt">B) leach</label><input type="radio" name="v_q6" id="v_q6c" class="qz-r corr"><label for="v_q6c" class="qz-opt">C) offset</label><div class="qz-fb ok">✅ Correct! To <b>offset</b> means to counteract something by having an opposing force or effect.</div><div class="qz-fb no">❌ Incorrect. <b>Deplete</b> means to use up. <b>Leach</b> means to drain away.</div></div><div class="qz-card"><div class="qz-num">7</div><div class="qz-sent">After the highly successful charity auction, all ___ were donated directly to the local animal rescue shelter. 💰</div><input type="radio" name="v_q7" id="v_q7a" class="qz-r corr"><label for="v_q7a" class="qz-opt">A) proceeds</label><input type="radio" name="v_q7" id="v_q7b" class="qz-r wrng"><label for="v_q7b" class="qz-opt">B) incentives</label><input type="radio" name="v_q7" id="v_q7c" class="qz-r wrng"><label for="v_q7c" class="qz-opt">C) diversities</label><div class="qz-fb ok">✅ Correct! <b>Proceeds</b> refers to the money obtained from an event or activity.</div><div class="qz-fb no">❌ Incorrect. <b>Incentives</b> are motivations. <b>Diversities</b> refers to variety.</div></div><div class="qz-card"><div class="qz-num">8</div><div class="qz-sent">The government offers a significant tax ___ to homeowners who decide to install solar panels on their roofs. ☀️</div><input type="radio" name="v_q8" id="v_q8a" class="qz-r wrng"><label for="v_q8a" class="qz-opt">A) sequestration</label><input type="radio" name="v_q8" id="v_q8b" class="qz-r corr"><label for="v_q8b" class="qz-opt">B) incentive</label><input type="radio" name="v_q8" id="v_q8c" class="qz-r wrng"><label for="v_q8c" class="qz-opt">C) devastation</label><div class="qz-fb ok">✅ Correct! An <b>incentive</b> is a thing that motivates or encourages one to do something.</div><div class="qz-fb no">❌ Incorrect. <b>Sequestration</b> means capturing/storing. <b>Devastation</b> means destruction.</div></div><div class="qz-card"><div class="qz-num">9</div><div class="qz-sent">The new startup's innovative app is finally gaining ___ in the highly competitive tech market. 📈</div><input type="radio" name="v_q9" id="v_q9a" class="qz-r wrng"><label for="v_q9a" class="qz-opt">A) mitigation</label><input type="radio" name="v_q9" id="v_q9b" class="qz-r wrng"><label for="v_q9b" class="qz-opt">B) leaching</label><input type="radio" name="v_q9" id="v_q9c" class="qz-r corr"><label for="v_q9c" class="qz-opt">C) traction</label><div class="qz-fb ok">✅ Correct! Gaining <b>traction</b> means gaining momentum or popularity.</div><div class="qz-fb no">❌ Incorrect. <b>Mitigation</b> means making less severe. <b>Leaching</b> means draining away.</div></div><div class="qz-card"><div class="qz-num">10</div><div class="qz-sent">Large-scale reforestation projects are highly effective for the long-term ___ of atmospheric carbon dioxide. 🌲</div><input type="radio" name="v_q10" id="v_q10a" class="qz-r corr"><label for="v_q10a" class="qz-opt">A) sequestration</label><input type="radio" name="v_q10" id="v_q10b" class="qz-r wrng"><label for="v_q10b" class="qz-opt">B) disturbance</label><input type="radio" name="v_q10" id="v_q10c" class="qz-r wrng"><label for="v_q10c" class="qz-opt">C) biodiversity</label><div class="qz-fb ok">✅ Correct! <b>Sequestration</b> is the action of capturing and storing something, like carbon.</div><div class="qz-fb no">❌ Incorrect. <b>Disturbance</b> is an interruption. <b>Biodiversity</b> is the variety of life.</div></div></div></div></div>
+<br>
+</div>
+
+<!-- ================= VOCABULARY PRACTICE ================= -->
+<div id="vocabulary-practice" class="section">
+  <h1>Vocabulary Practice</h1>
+  
+
+<!-- ================= READING ================= -->
+<div id="reading" class="section">
+  <h1>Reading</h1>
+  <div class="content-placeholder">Reading content goes here</div>
+</div>
+
+<!-- ================= LEARN GRAMMAR ================= -->
+<div id="learn-grammar" class="section">
+  <h1>Learn Grammar</h1>
+  <div class="content-placeholder">Learn Grammar content goes here</div>
+</div>
+
+<!-- ================= GRAMMAR PRACTICE ================= -->
+<div id="grammar-practice" class="section">
+  <h1>Grammar Practice</h1>
+  <div class="content-placeholder">Grammar Practice content goes here</div>
+</div>
+
+<!-- ================= LISTENING ================= -->
+<div id="listening" class="section">
+  <h1>Listening</h1>
+  <div class="content-placeholder">Listening content goes here</div>
+</div>
+
+<!-- ================= SPEAKING ================= -->
+<div id="speaking" class="section">
+  <h1>Speaking</h1>
+  <div class="content-placeholder">Speaking content goes here</div>
+</div>
+
+<!-- ================= WRITING ================= -->
+<div id="writing" class="section">
+  <h1>Writing</h1>
+  <div class="content-placeholder">Writing content goes here<br><small>(Вставьте сюда Пример 3 с textarea для эссе)</small></div>
+</div>
+
+</body>
+</html>`} />

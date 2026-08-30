@@ -1,0 +1,199 @@
+---
+title: 'News Learning: '
+description: 'Articles from CNN'
+---
+import InlineCode from '../../components/InlineCode.astro';
+
+<InlineCode code={`<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;padding:20px;position:relative}
+
+/* Кнопка-переключатель меню */
+.nav-toggle{
+  position:fixed;
+  right:20px;
+  top:20px;
+  z-index:1001;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#334155;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transition:all .25s ease;
+  line-height:1;
+}
+.nav-toggle:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+  transform:scale(1.05);
+}
+
+/* Сама панель меню */
+.nav-menu{
+  position:fixed;
+  right:20px;
+  top:80px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:#fff;
+  padding:16px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  border:1px solid #e2e8f0;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  transition:transform .3s ease, opacity .3s ease;
+  transform:translateX(0);
+  opacity:1;
+}
+
+/* Скрытое состояние меню */
+.nav-menu.hidden{
+  transform:translateX(calc(100% + 40px));
+  opacity:0;
+  pointer-events:none;
+}
+
+.nav-btn{
+  padding:8px 14px;
+  border:2px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:600;
+  color:#334155;
+  transition:all .2s;
+  white-space:nowrap;
+  text-align:left;
+  font-size:14px;
+}
+.nav-btn:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+}
+
+.section{scroll-margin-top:80px;margin:60px 0 40px 0;border:none;border-top:3px solid #e2e8f0;padding-top:40px}
+.section h1{font-size:42px;font-weight:800;color:#0f172a;margin:0 0 30px 0;text-align:center;letter-spacing:-0.5px}
+.content-placeholder{background:#fff;padding:30px;border-radius:12px;margin:20px 0;min-height:200px;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:16px}
+
+/* На мобильных меню по умолчанию скрыто */
+@media (max-width: 768px){
+  .nav-menu{
+    transform:translateX(calc(100% + 40px));
+    opacity:0;
+    pointer-events:none;
+  }
+  .nav-menu.visible{
+    transform:translateX(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .section h1{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- Кнопка переключения меню -->
+<button class="nav-toggle" onclick="toggleMenu()" aria-label="Скрыть/показать меню">☰</button>
+
+<div class="nav-menu" id="navMenu">
+  <button class="nav-btn" onclick="goTo('learn-vocabulary')">Learn Vocabulary</button>
+  <button class="nav-btn" onclick="goTo('vocabulary-practice')">Vocabulary Practice</button>
+  <button class="nav-btn" onclick="goTo('reading')">Reading</button>
+  <button class="nav-btn" onclick="goTo('learn-grammar')">Learn Grammar</button>
+  <button class="nav-btn" onclick="goTo('grammar-practice')">Grammar Practice</button>
+  <button class="nav-btn" onclick="goTo('listening')">Listening</button>
+  <button class="nav-btn" onclick="goTo('speaking')">Speaking</button>
+  <button class="nav-btn" onclick="goTo('writing')">Writing</button>
+</div>
+
+<script>
+  function toggleMenu(){
+    const menu = document.getElementById('navMenu');
+    const btn = document.querySelector('.nav-toggle');
+    const isMobile = window.innerWidth <= 768;
+
+    if(isMobile){
+      menu.classList.toggle('visible');
+      btn.textContent = menu.classList.contains('visible') ? '✕' : '☰';
+    } else {
+      menu.classList.toggle('hidden');
+      btn.textContent = menu.classList.contains('hidden') ? '☰' : '✕';
+    }
+  }
+
+  function goTo(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'});
+    // На мобильных автоматически сворачиваем меню после выбора
+    if(window.innerWidth <= 768){
+      const menu = document.getElementById('navMenu');
+      menu.classList.remove('visible');
+      document.querySelector('.nav-toggle').textContent = '☰';
+    }
+  }
+</script>
+
+<!-- ================= LEARN VOCABULARY ================= -->
+<div id="learn-vocabulary" class="section">
+  <h1>Learn Vocabulary</h1>
+  <div class="content-placeholder">Learn Vocabulary content goes here</div>
+</div>
+
+<!-- ================= VOCABULARY PRACTICE ================= -->
+<div id="vocabulary-practice" class="section">
+  <h1>Vocabulary Practice</h1>
+  <div class="content-placeholder">Vocabulary Practice content goes here</div>
+</div>
+
+<!-- ================= READING ================= -->
+<div id="reading" class="section">
+  <h1>Reading</h1>
+  <div class="content-placeholder">Reading content goes here</div>
+</div>
+
+<!-- ================= LEARN GRAMMAR ================= -->
+<div id="learn-grammar" class="section">
+  <h1>Learn Grammar</h1>
+  <div class="content-placeholder">Learn Grammar content goes here</div>
+</div>
+
+<!-- ================= GRAMMAR PRACTICE ================= -->
+<div id="grammar-practice" class="section">
+  <h1>Grammar Practice</h1>
+  <div class="content-placeholder">Grammar Practice content goes here</div>
+</div>
+
+<!-- ================= LISTENING ================= -->
+<div id="listening" class="section">
+  <h1>Listening</h1>
+  <div class="content-placeholder">Listening content goes here</div>
+</div>
+
+<!-- ================= SPEAKING ================= -->
+<div id="speaking" class="section">
+  <h1>Speaking</h1>
+  <div class="content-placeholder">Speaking content goes here</div>
+</div>
+
+<!-- ================= WRITING ================= -->
+<div id="writing" class="section">
+  <h1>Writing</h1>
+  <div class="content-placeholder">Writing content goes here</div>
+</div>
+
+</body>
+</html>`} />
