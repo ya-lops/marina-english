@@ -1,0 +1,482 @@
+---
+title: 'ВПР 6 кл 1.2'
+description: ''
+---
+import InlineCode from '../../components/InlineCode.astro';
+
+<InlineCode code={`<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;padding:20px;position:relative}
+
+/* === ПРОГРЕСС-БАР === */
+.progress-container{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:6px;
+  background:#e2e8f0;
+  z-index:1002;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,#3b82f6,#10b981);
+  width:0%;
+  transition:width .4s ease;
+  border-radius:0 3px 3px 0;
+}
+.progress-text{
+  position:fixed;
+  top:10px;
+  left:20px;
+  z-index:1003;
+  background:#fff;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  color:#334155;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  border:1px solid #e2e8f0;
+}
+
+/* === КНОПКА ПЕРЕКЛЮЧЕНИЯ МЕНЮ === */
+.nav-toggle{
+  position:fixed;
+  right:20px;
+  top:20px;
+  z-index:1001;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#334155;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transition:all .25s ease;
+  line-height:1;
+}
+.nav-toggle:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+  transform:scale(1.05);
+}
+
+/* === ГЛАВНАЯ ПАНЕЛЬ МЕНЮ === */
+.nav-menu{
+  position:fixed;
+  right:20px;
+  top:80px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  background:#fff;
+  padding:12px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  border:1px solid #e2e8f0;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  transition:transform .3s ease, opacity .3s ease;
+  transform:translateX(0);
+  opacity:1;
+  width:200px;
+}
+.nav-menu.hidden{
+  transform:translateX(calc(100% + 40px));
+  opacity:0;
+  pointer-events:none;
+}
+
+/* === КНОПКА ТЕМЫ === */
+.nav-btn-main{
+  padding:10px 12px;
+  border:2px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  font-weight:700;
+  color:#0f172a;
+  transition:all .2s;
+  white-space:nowrap;
+  text-align:left;
+  font-size:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  width:100%;
+}
+.nav-btn-main:hover{
+  border-color:#3b82f6;
+  color:#1e40af;
+  background:#eff6ff;
+}
+/* Улучшенный синий стиль для активной секции */
+.nav-btn-main.current{
+  border-color:#2563eb;
+  background:#dbeafe;
+  color:#1e40af;
+  box-shadow: 0 0 0 1px #3b82f6 inset;
+}
+
+/* === КНОПКИ СБРОСА И ПРОКРУТКИ === */
+.nav-divider{
+  height:1px;
+  background:#e2e8f0;
+  margin:8px 0 4px 0;
+}
+.nav-btn-reset{
+  padding:8px 12px;
+  border:1px solid #fecaca;
+  border-radius:8px;
+  background:#fef2f2;
+  cursor:pointer;
+  font-weight:600;
+  color:#b91c1c;
+  transition:all .2s;
+  text-align:center;
+  font-size:12px;
+  width:100%;
+}
+.nav-btn-reset:hover{
+  background:#fee2e2;
+  border-color:#f87171;
+}
+.nav-btn-top{
+  padding:8px 12px;
+  border:1px solid #bfdbfe;
+  border-radius:8px;
+  background:#eff6ff;
+  cursor:pointer;
+  font-weight:600;
+  color:#1e40af;
+  transition:all .2s;
+  text-align:center;
+  font-size:12px;
+  width:100%;
+  margin-top:4px;
+}
+.nav-btn-top:hover{
+  background:#dbeafe;
+  border-color:#60a5fa;
+}
+
+/* === СЕКЦИИ И КОНТЕНТ === */
+.section{scroll-margin-top:100px;margin:60px 0 40px 0;border:none;border-top:3px solid #e2e8f0;padding-top:40px}
+.section h1{font-size:36px;font-weight:800;color:#0f172a;margin:0 0 30px 0;text-align:center;letter-spacing:-0.5px}
+.content-placeholder{
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  margin:20px 0;
+  min-height:150px;
+  border:2px dashed #cbd5e1;
+  scroll-margin-top: 80px;
+}
+
+/* === МОБИЛЬНАЯ АДАПТАЦИЯ === */
+@media (max-width: 768px){
+  .nav-menu{
+    width:180px;
+    right:10px;
+    top:75px;
+    transform:translateX(calc(100% + 40px));
+    opacity:0;
+    pointer-events:none;
+  }
+  .nav-menu.visible{
+    transform:translateX(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .section h1{font-size:28px}
+  .progress-text{
+    font-size:11px;
+    padding:5px 10px;
+  }
+}
+
+/* === РЕЖИМ ПЕЧАТИ === */
+@media print{
+  .nav-toggle,
+  .nav-menu,
+  .progress-container,
+  .progress-text{
+    display:none !important;
+  }
+  body{
+    background:white;
+    padding:0;
+  }
+  .section{
+    page-break-before:always;
+    margin:20px 0;
+    border-top:2px solid #000;
+  }
+  .content-placeholder{
+    border:1px solid #999;
+    min-height:80px;
+    background:white;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Прогресс-бар -->
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="progress-text" id="progressText">Прогресс: 0 / 0</div>
+
+<!-- Кнопка переключения меню -->
+<button class="nav-toggle" onclick="toggleMenu()" aria-label="Скрыть/показать меню">☰</button>
+
+<div class="nav-menu" id="navMenu">
+  <button class="nav-btn-main" data-target="tema0" onclick="goTo('tema0')">Content <span class="arrow">▶</span></button>
+  
+  <!-- Убрано подменю 1.1, разделы выведены сразу в общий список -->
+  <button class="nav-btn-main" data-target="t1-1" onclick="goTo('t1-1')">1. Лексика</button>
+  <button class="nav-btn-main" data-target="t1-2" onclick="goTo('t1-2')">2. Лексика (практ.)</button>
+  <button class="nav-btn-main" data-target="t1-3" onclick="goTo('t1-3')">3. Чтение</button>
+  <button class="nav-btn-main" data-target="t1-4" onclick="goTo('t1-4')">4. Грамм. (теор.)</button>
+  <button class="nav-btn-main" data-target="t1-5" onclick="goTo('t1-5')">5. Грамм. (практ.)</button>
+  <button class="nav-btn-main" data-target="t1-6" onclick="goTo('t1-6')">6. Аудирование</button>
+  <button class="nav-btn-main" data-target="t1-7" onclick="goTo('t1-7')">7. Письмо</button>
+  <button class="nav-btn-main" data-target="t1-8" onclick="goTo('t1-8')">8. Говорение</button>
+
+  <div class="nav-divider"></div>
+  <button class="nav-btn-reset" onclick="clearProgress()">🔄 Сбросить ответы</button>
+  <button class="nav-btn-top" onclick="scrollToTop()">⬆️ Наверх</button>
+</div>
+
+<script>
+  // === 1. АВТОСОХРАНЕНИЕ ПРОГРЕССА ===
+  const pageKey = 'eng_lesson_' + window.location.pathname;
+
+  function saveField(el){
+    const elId = el.id || el.name;
+    if (!elId) return;
+    let value = el.value;
+    if (el.type === 'checkbox' || el.type === 'radio') {
+      value = el.checked;
+    }
+    localStorage.setItem(pageKey + '_' + elId, JSON.stringify(value));
+  }
+
+  function restoreFields(){
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+      const elId = el.id || el.name;
+      if (!elId) return;
+      const saved = localStorage.getItem(pageKey + '_' + elId);
+      if (saved !== null) {
+        const value = JSON.parse(saved);
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          el.checked = value;
+        } else {
+          el.value = value;
+        }
+      }
+    });
+    updateProgress();
+  }
+
+  function updateProgress() {
+  let filled = 0;
+  let total = 0;
+
+  // 1. Считаем радиокнопки (по группам name)
+  const radios = document.querySelectorAll('input[type="radio"]');
+  const radioGroups = new Set();
+  radios.forEach(r => {
+    radioGroups.add(r.name);
+    if (r.checked && r.classList.contains('corr')) {
+      filled++;
+    }
+  });
+  total += radioGroups.size;
+
+  // 2. Считаем специальные трекеры прогресса (текстовые поля и скрытые инпуты)
+  const trackers = document.querySelectorAll('.progress-tracker');
+  total += trackers.length;
+  trackers.forEach(tracker => {
+    if (tracker.dataset.status === 'correct') {
+      filled++;
+    }
+  });
+
+  const percent = total > 0 ? (filled / total) * 100 : 0;
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  if (progressBar) progressBar.style.width = percent + '%';
+  if (progressText) progressText.textContent = 'Прогресс: ' + filled + ' / ' + total;
+}
+
+// Эта функция просто сбрасывает статус поля, но НЕ вызывает updateProgress!
+// Поэтому прогресс-бар не дёргается при вводе.
+function resetTrackerStatus(el) {
+  if (el.classList.contains('progress-tracker')) {
+    el.dataset.status = 'none';
+    el.style.borderColor = '#cbd5e1';
+    el.style.background = '#fff';
+  }
+}
+
+// === ГЛОБАЛЬНЫЙ СБРОС ВСЕХ ОТВЕТОВ ===
+function clearProgress() {
+  if (!confirm('Вы уверены, что хотите очистить все ответы в этом уроке? Это действие нельзя отменить.')) return;
+  const pageKey = 'eng_lesson_' + window.location.pathname;
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith(pageKey)) {
+      localStorage.removeItem(key);
+    }
+  });
+  location.reload();
+}
+
+
+  // === 3. ПОДСВЕТКА АКТИВНОГО РАЗДЕЛА (Исправленная логика) ===
+  let ticking = false;
+
+  function updateActiveSection(){
+    const allTargets = document.querySelectorAll('[id^="tema"], [id^="t"]');
+    const threshold = window.innerHeight * 0.35;
+    
+    let activeEl = null;
+    
+    // 1. Ищем элемент, который физически находится на уровне порога (35% сверху)
+    allTargets.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= threshold && rect.bottom >= threshold) {
+        activeEl = el;
+      }
+    });
+    
+    // 2. Если не нашли (например, короткие блоки и мы прокручиваем между ними), 
+    // берем последний, чей верх уже пересек порог
+    if (!activeEl) {
+      allTargets.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= threshold) {
+          activeEl = el;
+        }
+      });
+    }
+    
+    if (activeEl) {
+      highlightActiveButton(activeEl.id);
+    }
+    ticking = false;
+  }
+
+  function highlightActiveButton(sectionId){
+    document.querySelectorAll('.nav-btn-main.current').forEach(btn => {
+      btn.classList.remove('current');
+    });
+    const btn = document.querySelector('[data-target="' + sectionId + '"]');
+    if (btn && btn.classList.contains('nav-btn-main')) {
+      btn.classList.add('current');
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateActiveSection);
+      ticking = true;
+    }
+  });
+
+  // === 4. НАВИГАЦИЯ ===
+  function toggleMenu(){
+    const menu = document.getElementById('navMenu');
+    const btn = document.querySelector('.nav-toggle');
+    const isMobile = window.innerWidth <= 768;
+
+    if(isMobile){
+      menu.classList.toggle('visible');
+      btn.textContent = menu.classList.contains('visible') ? '✕' : '☰';
+    } else {
+      menu.classList.toggle('hidden');
+      btn.textContent = menu.classList.contains('hidden') ? '☰' : '✕';
+    }
+  }
+
+  function goTo(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'center'});
+    if(window.innerWidth <= 768){
+      const menu = document.getElementById('navMenu');
+      menu.classList.remove('visible');
+      document.querySelector('.nav-toggle').textContent = '☰';
+    }
+  }
+
+  function scrollToTop(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if(window.innerWidth <= 768){
+      const menu = document.getElementById('navMenu');
+      menu.classList.remove('visible');
+      document.querySelector('.nav-toggle').textContent = '☰';
+    }
+  }
+
+  // === 5. ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ===
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input, textarea, select')) {
+      saveField(e.target);
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="radio"], input[type="checkbox"]')) {
+      if (e.target.type === 'radio') {
+        const name = e.target.name;
+        document.querySelectorAll('input[type="radio"][name="' + name + '"]').forEach(r => {
+          saveField(r);
+        });
+      } else {
+        saveField(e.target);
+      }
+      updateProgress();
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    restoreFields();
+    updateActiveSection();
+  });
+</script>
+
+<div id="tema0" class="section"><h1>Содержание</h1></div>
+<!-- Содержание-->
+
+<!-- ================= ТЕМА 1.1 ================= -->
+
+<!-- 1. Лексика --> <div id="t1-1" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">1. Лексика</h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+<div class="content-placeholder"><style>.dr-wrap{max-width:900px;margin:20px auto;font-family:'Segoe UI',system-ui,sans-serif;background:#f8f9fa;padding:20px;border-radius:16px;color:#334155}.dr-box{background:#fff;padding:25px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}.dr-title{color:#0f172a;margin:0 0 15px 0}.dr-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;margin:10px 0 15px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:.2s;box-shadow:0 2px 8px rgba(245,158,11,.3)}.dr-btn:hover{opacity:.9;transform:translateY(-1px)}.dr-btn.test{background:#ef4444;box-shadow:0 2px 8px rgba(239,68,68,.3)}.dr-btn.test:hover{background:#dc2626}.dr-panel{display:none;overflow:hidden;animation:drFade .3s}.dr-panel.active{display:block}@keyframes drFade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}.ex-card{background:#fff;border-radius:12px;padding:10px 0;margin:15px 0}.ex-card h4{margin:0 0 15px 0;color:#2c3e50;font-size:16px;display:flex;align-items:center;gap:8px;padding-left:5px}.ex-item{padding:12px 15px;margin:8px 0;background:#f8f9fa;border-radius:8px;font-size:15px;line-height:1.6;color:#333}.vt-word{display:inline-flex;align-items:center;gap:4px;margin:0 2px;padding:4px 8px;background:#e3f2fd;border-radius:6px;cursor:pointer;position:relative;font-weight:600;color:#1565c0;transition:all .2s;border:1px solid #bbdefb}.vt-word:hover{background:#bbdefb}.vt-word::after{content:"🔍";font-size:10px;opacity:.6}.vt-tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(8px);background:#fff;color:#333;padding:12px 16px;border-radius:10px;font-size:15px;font-weight:400;white-space:nowrap;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:100;border:1px solid #eee}.vt-word:hover .vt-tooltip{opacity:1;transform:translateX(-50%) translateY(0)}.vt-tooltip b{color:#e65100;font-size:16px}.chip-speak{margin-left:5px;font-size:11px;cursor:pointer;opacity:.75}.chip-speak:hover{opacity:1}.speak-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-left:8px;border:1px solid #bbdefb;border-radius:50%;background:#fff;cursor:pointer;font-size:15px;transition:.2s;padding:0;vertical-align:middle}.speak-btn:hover{background:#e3f2fd;transform:scale(1.12)}.speak-btn.big{width:36px;height:36px;font-size:18px}.practice-box{background:linear-gradient(135deg,#fff9e6,#fff3cd);border:2px dashed #f9a825;border-radius:12px;padding:20px;margin:15px 0;overflow:visible !important}.practice-box h4{margin:0 0 15px 0;color:#f57f17;font-size:16px;display:flex;align-items:center;gap:8px}.practice-text{line-height:2;color:#2c3e50;font-size:15px}.blur-wrapper{cursor:pointer;position:relative;display:inline}.blur-text{filter:blur(4px);opacity:.6;transition:all .3s;padding:0 2px;border-radius:3px}.blur-wrapper.revealed .blur-text{filter:none;opacity:1;background:#e8f5e9;padding:2px 6px;border-radius:4px}.tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(5px);background:#fff9c4;color:#5d4037;padding:10px 14px;border-radius:8px;font-size:14px;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:9999 !important;max-width:280px}.blur-wrapper:hover .tooltip{opacity:1;transform:translateX(-50%) translateY(0)}.qz-title{font-size:20px;font-weight:800;color:#0f172a;margin:0 0 5px 0}.qz-sub{color:#64748b;font-size:14px;margin:0 0 20px 0}.qz-stats{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:2px solid #c7d2fe;border-radius:10px;padding:12px 18px;margin:15px 0;font-size:16px;font-weight:700;color:#4338ca;text-align:center}.qz-card{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:20px;margin:15px 0;position:relative}.qz-num{position:absolute;top:14px;left:14px;width:32px;height:32px;background:#6366f1;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}.qz-sent{font-size:18px;line-height:1.7;margin:10px 0 18px 46px;color:#334155;padding-left:16px}.qz-r{display:none}.qz-opt{display:block;padding:12px 16px;margin:6px 0 6px 46px;background:#fff;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:.2s;font-weight:500;color:#475569}.qz-opt:hover{background:#f1f5f9;border-color:#94a3b8}.qz-r.corr:checked+.qz-opt{background:#dcfce7;border-color:#22c55e;color:#15803d;font-weight:700}.qz-r.wrng:checked+.qz-opt{background:#fee2e2;border-color:#ef4444;color:#b91c1c}.qz-fb{display:none;margin:12px 0 0 46px;padding:12px;border-radius:8px;font-size:14px;line-height:1.5;animation:qzFade .3s}@keyframes qzFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}.qz-card .qz-r.corr:checked~.qz-fb.ok{display:block;background:#dcfce7;color:#15803d;border-left:4px solid #22c55e}.qz-card .qz-fb.no{display:none !important}.qz-card .qz-fb.no.visible{display:block !important;background:#fee2e2;color:#b91c1c;border-left:4px solid #ef4444}.task-reset-btn{display:block;width:100%;padding:12px 20px;margin:20px 0 5px;border:2px solid #fecaca;border-radius:10px;background:#fef2f2;color:#b91c1c;font-size:15px;font-weight:600;cursor:pointer;transition:.2s}.task-reset-btn:hover{background:#fee2e2;border-color:#f87171}.practice-reset-btn{display:inline-block;padding:8px 16px;margin-top:15px;border:1px solid #f9a825;border-radius:8px;background:#fff;color:#b45309;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}.practice-reset-btn:hover{background:#fff9e6}@media(max-width:600px){.dr-box{padding:15px}.qz-sent,.qz-opt,.qz-fb{margin-left:0;padding-left:10px}.vt-tooltip{width:220px;white-space:normal;text-align:center;left:0;transform:translateX(0) translateY(8px)}.vt-word:hover .vt-tooltip{transform:translateX(0) translateY(0)}.tooltip{max-width:200px;white-space:normal;text-align:center;left:0;transform:translateX(0) translateY(5px)}.blur-wrapper:hover .tooltip{transform:translateX(0) translateY(0)}}</style><div class="dr-wrap" id="lesson-ft11"><div class="dr-box"><h2 class="dr-title">Тема 1 • Подтема 1.1: Family Members and Relatives 👪</h2><button class="dr-btn" id="btn-learn-ft11" style="background:#f59e0b;color:#fff" onclick="ft11_togglePanel('learn-ft11')">📘 Learn</button><div class="dr-panel" id="learn-ft11"><div class="ex-card"><h4>Examples &amp; Practice 💬</h4><div class="ex-item">1) I live in a <span class="vt-word">nuclear family<span class="vt-tooltip"><b>nuclear family</b><br>нуклеарная семья (родители и дети)</span><span class="chip-speak" data-say="nuclear family" onclick="ft11_speakFrom(this)">🔊</span></span> with my parents and my sister. 👨‍👩‍<button class="speak-btn" data-say="I live in a nuclear family with my parents and my sister." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">2) We usually spend summer holidays with our <span class="vt-word">extended family<span class="vt-tooltip"><b>extended family</b><br>расширенная семья</span><span class="chip-speak" data-say="extended family" onclick="ft11_speakFrom(this)">🔊</span></span>. 👪<button class="speak-btn" data-say="We usually spend summer holidays with our extended family." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">3) I don't have any brothers or sisters, I am <span class="vt-word">an only child<span class="vt-tooltip"><b>an only child</b><br>единственный ребёнок в семье</span><span class="chip-speak" data-say="an only child" onclick="ft11_speakFrom(this)">🔊</span></span>. 🧍<button class="speak-btn" data-say="I don't have any brothers or sisters, I am an only child." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">4) <span class="vt-word">The eldest<span class="vt-tooltip"><b>the eldest child</b><br>старший ребёнок</span><span class="chip-speak" data-say="the eldest child" onclick="ft11_speakFrom(this)">🔊</span></span> child often helps parents, and <span class="vt-word">the youngest<span class="vt-tooltip"><b>the youngest child</b><br>младший ребёнок</span><span class="chip-speak" data-say="the youngest child" onclick="ft11_speakFrom(this)">🔊</span></span> child plays all day. 👦<button class="speak-btn" data-say="The eldest child often helps parents, and the youngest child plays all day." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">5) Being <span class="vt-word">a middle child<span class="vt-tooltip"><b>a middle child</b><br>средний ребёнок</span><span class="chip-speak" data-say="a middle child" onclick="ft11_speakFrom(this)">🔊</span></span>, he knows how to share and compromise. 🧒<button class="speak-btn" data-say="Being a middle child, he knows how to share and compromise." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">6) My cousins are <span class="vt-word">twins<span class="vt-tooltip"><b>twins</b><br>близнецы / двойняшки</span><span class="chip-speak" data-say="twins" onclick="ft11_speakFrom(this)">🔊</span></span>, they look exactly the same. 👯<button class="speak-btn" data-say="My cousins are twins, they look exactly the same." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">7) <span class="vt-word">A distant relative<span class="vt-tooltip"><b>a distant relative</b><br>дальний родственник</span><span class="chip-speak" data-say="a distant relative" onclick="ft11_speakFrom(this)">🔊</span></span> invited us to his wedding last month. 💒<button class="speak-btn" data-say="A distant relative invited us to his wedding last month." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">8) Only <span class="vt-word">close relatives<span class="vt-tooltip"><b>close relatives</b><br>близкие родственники</span><span class="chip-speak" data-say="close relatives" onclick="ft11_speakFrom(this)">🔊</span></span> came to our small family dinner. 🍽️<button class="speak-btn" data-say="Only close relatives came to our small family dinner." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">9) Are you <span class="vt-word">related to<span class="vt-tooltip"><b>to be related to</b><br>быть в родстве с кем-либо</span><span class="chip-speak" data-say="related to" onclick="ft11_speakFrom(this)">🔊</span></span> the Smiths? My grandmother <span class="vt-word">on my mother's side<span class="vt-tooltip"><b>on my mother's side</b><br>по материнской линии</span><span class="chip-speak" data-say="on my mother's side" onclick="ft11_speakFrom(this)">🔊</span></span> is their neighbour! 🏡<button class="speak-btn" data-say="Are you related to the Smiths? My grandmother on my mother's side is their neighbour!" onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">10) My older brother wants to <span class="vt-word">start a family<span class="vt-tooltip"><b>to start a family</b><br>создать семью, завести детей</span><span class="chip-speak" data-say="start a family" onclick="ft11_speakFrom(this)">🔊</span></span> next year. 💍<button class="speak-btn" data-say="My older brother wants to start a family next year." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">11) It is not easy to <span class="vt-word">bring up<span class="vt-tooltip"><b>to bring up children</b><br>воспитывать детей</span><span class="chip-speak" data-say="bring up children" onclick="ft11_speakFrom(this)">🔊</span></span> children, but I <span class="vt-word">grew up in a big family<span class="vt-tooltip"><b>to grow up in a big family</b><br>расти в большой семье</span><span class="chip-speak" data-say="I grew up in a big family" onclick="ft11_speakFrom(this)">🔊</span></span>, and my parents know how. 🧸<button class="speak-btn" data-say="It is not easy to bring up children, but I grew up in a big family, and my parents know how." onclick="ft11_speakFrom(this)">🔊</button></div><div class="ex-item">12) We drew our <span class="vt-word">family tree<span class="vt-tooltip"><b>family tree</b><br>генеалогическое древо</span><span class="chip-speak" data-say="family tree" onclick="ft11_speakFrom(this)">🔊</span></span> for the history project at school. 🌳<button class="speak-btn" data-say="We drew our family tree for the history project at school." onclick="ft11_speakFrom(this)">🔊</button></div></div><div class="practice-box"><h4>🎯 Practice Text: My Family Tree 🌳 <button class="speak-btn big" data-say="Let me show you my family tree! I grew up in a big family, so I am used to noise and fun. My parents, my sister and I are a nuclear family, but at holidays our extended family gets together. My cousin Max is an only child, and his close relatives live far away. A distant relative of ours lives in Canada. My grandmother on my mother's side bakes the best pies. We are related to the Browns: our grandfathers were brothers. My aunt and uncle know how to bring up children well. My older brother wants to start a family next year. In our family, the eldest child cooks dinner and the youngest child sets the table. My cousins are twins, and I am a middle child. I always help everyone make peace!" onclick="ft11_speakFrom(this)">🔊</button></h4><div class="practice-text">Let me show you my <span class="blur-wrapper" id="bw-ft11-1" onclick="ft11_toggleBlur('bw-ft11-1')"><span class="blur-text">family tree 🌳</span><span class="tooltip"> генеалогическое древо</span></span>! I <span class="blur-wrapper" id="bw-ft11-2" onclick="ft11_toggleBlur('bw-ft11-2')"><span class="blur-text">grew up in a big family 🏡</span><span class="tooltip"> рос(ла) в большой семье</span></span>, so I am used to noise and fun. My parents, my sister and I are a <span class="blur-wrapper" id="bw-ft11-3" onclick="ft11_toggleBlur('bw-ft11-3')"><span class="blur-text">nuclear family 👨‍‍</span><span class="tooltip"> нуклеарная семья</span></span>, but at holidays our <span class="blur-wrapper" id="bw-ft11-4" onclick="ft11_toggleBlur('bw-ft11-4')"><span class="blur-text">extended family 👪</span><span class="tooltip"> расширенная семья</span></span> gets together. My cousin Max is <span class="blur-wrapper" id="bw-ft11-5" onclick="ft11_toggleBlur('bw-ft11-5')"><span class="blur-text">an only child 🧍</span><span class="tooltip"> единственный ребёнок</span></span>, and his <span class="blur-wrapper" id="bw-ft11-6" onclick="ft11_toggleBlur('bw-ft11-6')"><span class="blur-text">close relatives ❤️</span><span class="tooltip"> близкие родственники</span></span> live far away. <span class="blur-wrapper" id="bw-ft11-7" onclick="ft11_toggleBlur('bw-ft11-7')"><span class="blur-text">A distant relative 🧔</span><span class="tooltip"> дальний родственник</span></span> of ours lives in Canada. My grandmother <span class="blur-wrapper" id="bw-ft11-8" onclick="ft11_toggleBlur('bw-ft11-8')"><span class="blur-text">on my mother's side 🥧</span><span class="tooltip"> по материнской линии</span></span> bakes the best pies. We are <span class="blur-wrapper" id="bw-ft11-9" onclick="ft11_toggleBlur('bw-ft11-9')"><span class="blur-text">related to 🔗</span><span class="tooltip"> в родстве с</span></span> the Browns: our grandfathers were brothers. My aunt and uncle know how to <span class="blur-wrapper" id="bw-ft11-10" onclick="ft11_toggleBlur('bw-ft11-10')"><span class="blur-text">bring up 🧸</span><span class="tooltip"> воспитывать</span></span> children well. My older brother wants to <span class="blur-wrapper" id="bw-ft11-11" onclick="ft11_toggleBlur('bw-ft11-11')"><span class="blur-text">start a family 💍</span><span class="tooltip"> создать семью</span></span> next year. In our family, <span class="blur-wrapper" id="bw-ft11-12" onclick="ft11_toggleBlur('bw-ft11-12')"><span class="blur-text">the eldest 👦</span><span class="tooltip"> старший</span></span> child cooks dinner and <span class="blur-wrapper" id="bw-ft11-13" onclick="ft11_toggleBlur('bw-ft11-13')"><span class="blur-text">the youngest 👶</span><span class="tooltip"> младший</span></span> child sets the table. My cousins are <span class="blur-wrapper" id="bw-ft11-14" onclick="ft11_toggleBlur('bw-ft11-14')"><span class="blur-text">twins 👯</span><span class="tooltip"> близнецы</span></span>, and I am <span class="blur-wrapper" id="bw-ft11-15" onclick="ft11_toggleBlur('bw-ft11-15')"><span class="blur-text">a middle child 🧒</span><span class="tooltip"> средний ребёнок</span></span> — I always help everyone make peace!</div><button class="practice-reset-btn" onclick="ft11_resetPractice('lesson-ft11')">reset</button></div></div><button class="dr-btn test" id="btn-test-ft11" style="background:#ef4444;color:#fff" onclick="ft11_togglePanel('test-ft11')">🧪 Test</button><div class="dr-panel" id="test-ft11"><h3 class="qz-title" id="test-title-ft11">👪 Test: Family Members and Relatives</h3><p class="qz-sub">Choose the correct option (15 questions):</p><div class="qz-card"><div class="qz-num">1</div><div class="qz-sent">I live with my parents and my sister. We are a ___.</div><input type="radio" name="ft11_q1" id="ft11_q1a" class="qz-r wrng" data-feedback="ft11_q1_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q1a" class="qz-opt">A) family tree</label><input type="radio" name="ft11_q1" id="ft11_q1b" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q1b" class="qz-opt">B) nuclear family</label><input type="radio" name="ft11_q1" id="ft11_q1c" class="qz-r wrng" data-feedback="ft11_q1_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q1c" class="qz-opt">C) distant relative</label><div class="qz-fb ok">✅ Correct! <b>Nuclear family</b> = нуклеарная семья (родители и дети).</div><div class="qz-fb no" id="ft11_q1_fb_a">❌ <b>Family tree</b> = генеалогическое древо. Это схема рода, а не семья.</div><div class="qz-fb no" id="ft11_q1_fb_c">❌ <b>Distant relative</b> = дальний родственник. Это один человек, а не «мы всей семьёй».</div></div><div class="qz-card"><div class="qz-num">2</div><div class="qz-sent">At Christmas all our aunts, uncles and cousins come to us. Our ___ gets together.</div><input type="radio" name="ft11_q2" id="ft11_q2a" class="qz-r wrng" data-feedback="ft11_q2_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q2a" class="qz-opt">A) only child</label><input type="radio" name="ft11_q2" id="ft11_q2b" class="qz-r wrng" data-feedback="ft11_q2_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q2b" class="qz-opt">B) middle child</label><input type="radio" name="ft11_q2" id="ft11_q2c" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q2c" class="qz-opt">C) extended family</label><div class="qz-fb ok">✅ Correct! <b>Extended family</b> = расширенная семья (вся родня).</div><div class="qz-fb no" id="ft11_q2_fb_a">❌ <b>Only child</b> = единственный ребёнок. Речь обо всей родне, а не об одном ребёнке.</div><div class="qz-fb no" id="ft11_q2_fb_b">❌ <b>Middle child</b> = средний ребёнок. Не подходит по смыслу.</div></div><div class="qz-card"><div class="qz-num">3</div><div class="qz-sent">Tom has no brothers or sisters. He is ___.</div><input type="radio" name="ft11_q3" id="ft11_q3a" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q3a" class="qz-opt">A) an only child</label><input type="radio" name="ft11_q3" id="ft11_q3b" class="qz-r wrng" data-feedback="ft11_q3_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q3b" class="qz-opt">B) a twin</label><input type="radio" name="ft11_q3" id="ft11_q3c" class="qz-r wrng" data-feedback="ft11_q3_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q3c" class="qz-opt">C) the eldest child</label><div class="qz-fb ok">✅ Correct! <b>An only child</b> = единственный ребёнок в семье.</div><div class="qz-fb no" id="ft11_q3_fb_b">❌ <b>A twin</b> = близнец. У близнеца всегда есть брат или сестра-двойняшка.</div><div class="qz-fb no" id="ft11_q3_fb_c">❌ <b>The eldest child</b> = старший ребёнок. Это тоже подразумевает братьев или сестёр.</div></div><div class="qz-card"><div class="qz-num">4</div><div class="qz-sent">My brother Nick is 15 and I am 12, so Nick is ___ child in our family.</div><input type="radio" name="ft11_q4" id="ft11_q4a" class="qz-r wrng" data-feedback="ft11_q4_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q4a" class="qz-opt">A) the youngest</label><input type="radio" name="ft11_q4" id="ft11_q4b" class="qz-r wrng" data-feedback="ft11_q4_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q4b" class="qz-opt">B) a middle</label><input type="radio" name="ft11_q4" id="ft11_q4c" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q4c" class="qz-opt">C) the eldest</label><div class="qz-fb ok">✅ Correct! <b>The eldest</b> = старший. Нику 15, он старше тебя.</div><div class="qz-fb no" id="ft11_q4_fb_a">❌ <b>The youngest</b> = младший. Нику 15, он старше, а не младше.</div><div class="qz-fb no" id="ft11_q4_fb_b">❌ <b>A middle</b> = средний. В семье двое детей, среднего ребёнка нет.</div></div><div class="qz-card"><div class="qz-num">5</div><div class="qz-sent">My little sister is only five. She is ___ child in our family.</div><input type="radio" name="ft11_q5" id="ft11_q5a" class="qz-r wrng" data-feedback="ft11_q5_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q5a" class="qz-opt">A) the eldest</label><input type="radio" name="ft11_q5" id="ft11_q5b" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q5b" class="qz-opt">B) the youngest</label><input type="radio" name="ft11_q5" id="ft11_q5c" class="qz-r wrng" data-feedback="ft11_q5_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q5c" class="qz-opt">C) a distant</label><div class="qz-fb ok">✅ Correct! <b>The youngest</b> = младший. Пять лет — это самая младшая.</div><div class="qz-fb no" id="ft11_q5_fb_a">❌ <b>The eldest</b> = старший. Пять лет — это не старший ребёнок.</div><div class="qz-fb no" id="ft11_q5_fb_c">❌ <b>A distant</b> = дальний. Так говорят о родственниках, а не о детях в семье.</div></div><div class="qz-card"><div class="qz-num">6</div><div class="qz-sent">I am not the oldest and not the youngest. I am ___.</div><input type="radio" name="ft11_q6" id="ft11_q6a" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q6a" class="qz-opt">A) a middle child</label><input type="radio" name="ft11_q6" id="ft11_q6b" class="qz-r wrng" data-feedback="ft11_q6_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q6b" class="qz-opt">B) a twin</label><input type="radio" name="ft11_q6" id="ft11_q6c" class="qz-r wrng" data-feedback="ft11_q6_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q6c" class="qz-opt">C) an only child</label><div class="qz-fb ok">✅ Correct! <b>A middle child</b> = средний ребёнок.</div><div class="qz-fb no" id="ft11_q6_fb_b">❌ <b>A twin</b> = близнец. Это про рождение в один день, а не про порядок рождения.</div><div class="qz-fb no" id="ft11_q6_fb_c">❌ <b>An only child</b> = единственный ребёнок. У него вообще нет братьев и сестёр.</div></div><div class="qz-card"><div class="qz-num">7</div><div class="qz-sent">Tom and Tim were born on the same day. They are ___.</div><input type="radio" name="ft11_q7" id="ft11_q7a" class="qz-r wrng" data-feedback="ft11_q7_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q7a" class="qz-opt">A) distant relatives</label><input type="radio" name="ft11_q7" id="ft11_q7b" class="qz-r wrng" data-feedback="ft11_q7_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q7b" class="qz-opt">B) middle children</label><input type="radio" name="ft11_q7" id="ft11_q7c" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q7c" class="qz-opt">C) twins</label><div class="qz-fb ok">✅ Correct! <b>Twins</b> = близнецы (рождены в один день).</div><div class="qz-fb no" id="ft11_q7_fb_a">❌ <b>Distant relatives</b> = дальние родственники. Не подходит по смыслу.</div><div class="qz-fb no" id="ft11_q7_fb_b">❌ <b>Middle children</b> = средние дети. Речь о том, что они родились в один день.</div></div><div class="qz-card"><div class="qz-num">8</div><div class="qz-sent">We see him very rarely, but a ___ invited us to his wedding.</div><input type="radio" name="ft11_q8" id="ft11_q8a" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q8a" class="qz-opt">A) distant relative</label><input type="radio" name="ft11_q8" id="ft11_q8b" class="qz-r wrng" data-feedback="ft11_q8_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q8b" class="qz-opt">B) close relative</label><input type="radio" name="ft11_q8" id="ft11_q8c" class="qz-r wrng" data-feedback="ft11_q8_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q8c" class="qz-opt">C) nuclear family</label><div class="qz-fb ok">✅ Correct! <b>A distant relative</b> = дальний родственник (видим редко).</div><div class="qz-fb no" id="ft11_q8_fb_b">❌ <b>Close relative</b> = близкий родственник. Близких родственников мы видим часто.</div><div class="qz-fb no" id="ft11_q8_fb_c">❌ <b>Nuclear family</b> = нуклеарная семья. Это группа людей, а не один гость.</div></div><div class="qz-card"><div class="qz-num">9</div><div class="qz-sent">Only our ___ came to the small family dinner: grandparents, aunts and uncles.</div><input type="radio" name="ft11_q9" id="ft11_q9a" class="qz-r wrng" data-feedback="ft11_q9_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q9a" class="qz-opt">A) distant relatives</label><input type="radio" name="ft11_q9" id="ft11_q9b" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q9b" class="qz-opt">B) close relatives</label><input type="radio" name="ft11_q9" id="ft11_q9c" class="qz-r wrng" data-feedback="ft11_q9_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q9c" class="qz-opt">C) twins</label><div class="qz-fb ok">✅ Correct! <b>Close relatives</b> = близкие родственники.</div><div class="qz-fb no" id="ft11_q9_fb_a">❌ <b>Distant relatives</b> = дальние родственники. На маленький ужин зовут близких.</div><div class="qz-fb no" id="ft11_q9_fb_c">❌ <b>Twins</b> = близнецы. Не подходит по смыслу.</div></div><div class="qz-card"><div class="qz-num">10</div><div class="qz-sent">Are you ___ the Smiths? Your grandfathers are brothers!</div><input type="radio" name="ft11_q10" id="ft11_q10a" class="qz-r wrng" data-feedback="ft11_q10_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q10a" class="qz-opt">A) married to</label><input type="radio" name="ft11_q10" id="ft11_q10b" class="qz-r wrng" data-feedback="ft11_q10_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q10b" class="qz-opt">B) keen on</label><input type="radio" name="ft11_q10" id="ft11_q10c" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q10c" class="qz-opt">C) related to</label><div class="qz-fb ok">✅ Correct! <b>To be related to</b> = быть в родстве с кем-либо.</div><div class="qz-fb no" id="ft11_q10_fb_a">❌ <b>Married to</b> = женат на / замужем за. Дедушки-братья — это родство, а не брак.</div><div class="qz-fb no" id="ft11_q10_fb_b">❌ <b>Keen on</b> = увлекаться чем-то. Не подходит по смыслу.</div></div><div class="qz-card"><div class="qz-num">11</div><div class="qz-sent">My grandmother ___ is my mum's mother. She bakes delicious pies.</div><input type="radio" name="ft11_q11" id="ft11_q11a" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q11a" class="qz-opt">A) on my mother's side</label><input type="radio" name="ft11_q11" id="ft11_q11b" class="qz-r wrng" data-feedback="ft11_q11_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q11b" class="qz-opt">B) on my father's side</label><input type="radio" name="ft11_q11" id="ft11_q11c" class="qz-r wrng" data-feedback="ft11_q11_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q11c" class="qz-opt">C) in a big family</label><div class="qz-fb ok">✅ Correct! <b>On my mother's side</b> = по материнской линии.</div><div class="qz-fb no" id="ft11_q11_fb_b">❌ <b>On my father's side</b> = по отцовской линии. Мамина мама — это материнская линия.</div><div class="qz-fb no" id="ft11_q11_fb_c">❌ <b>In a big family</b> = в большой семье. Не подходит по смыслу.</div></div><div class="qz-card"><div class="qz-num">12</div><div class="qz-sent">My older brother wants to ___ next year and have two children.</div><input type="radio" name="ft11_q12" id="ft11_q12a" class="qz-r wrng" data-feedback="ft11_q12_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q12a" class="qz-opt">A) draw a family tree</label><input type="radio" name="ft11_q12" id="ft11_q12b" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q12b" class="qz-opt">B) start a family</label><input type="radio" name="ft11_q12" id="ft11_q12c" class="qz-r wrng" data-feedback="ft11_q12_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q12c" class="qz-opt">C) be a middle child</label><div class="qz-fb ok">✅ Correct! <b>To start a family</b> = создать семью, завести детей.</div><div class="qz-fb no" id="ft11_q12_fb_a">❌ <b>Draw a family tree</b> = нарисовать генеалогическое древо. От этого дети не появляются.</div><div class="qz-fb no" id="ft11_q12_fb_c">❌ <b>Be a middle child</b> = быть средним ребёнком. Не подходит по смыслу.</div></div><div class="qz-card"><div class="qz-num">13</div><div class="qz-sent">My parents are kind but strict. They know how to ___ children.</div><input type="radio" name="ft11_q13" id="ft11_q13a" class="qz-r wrng" data-feedback="ft11_q13_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q13a" class="qz-opt">A) grow up</label><input type="radio" name="ft11_q13" id="ft11_q13b" class="qz-r wrng" data-feedback="ft11_q13_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q13b" class="qz-opt">B) get together</label><input type="radio" name="ft11_q13" id="ft11_q13c" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q13c" class="qz-opt">C) bring up</label><div class="qz-fb ok">✅ Correct! <b>To bring up</b> = воспитывать детей.</div><div class="qz-fb no" id="ft11_q13_fb_a">❌ <b>Grow up</b> = расти, взрослеть. Родители ВОСПИТЫВАЮТ детей — bring up.</div><div class="qz-fb no" id="ft11_q13_fb_b">❌ <b>Get together</b> = собираться вместе. Не подходит по смыслу.</div></div><div class="qz-card"><div class="qz-num">14</div><div class="qz-sent">I ___, so I am used to noise and fun.</div><input type="radio" name="ft11_q14" id="ft11_q14a" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q14a" class="qz-opt">A) grew up in a big family</label><input type="radio" name="ft11_q14" id="ft11_q14b" class="qz-r wrng" data-feedback="ft11_q14_fb_b" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q14b" class="qz-opt">B) started a family</label><input type="radio" name="ft11_q14" id="ft11_q14c" class="qz-r wrng" data-feedback="ft11_q14_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q14c" class="qz-opt">C) am an only child</label><div class="qz-fb ok">✅ Correct! <b>To grow up in a big family</b> = расти в большой семье.</div><div class="qz-fb no" id="ft11_q14_fb_b">❌ <b>Started a family</b> = создал(а) семью. Это не объясняет привычку к шуму с детства.</div><div class="qz-fb no" id="ft11_q14_fb_c">❌ <b>Am an only child</b> = единственный ребёнок. У единственного ребёнка не было шумной компании дома.</div></div><div class="qz-card"><div class="qz-num">15</div><div class="qz-sent">We drew our ___ for the history project: all our relatives since 1900!</div><input type="radio" name="ft11_q15" id="ft11_q15a" class="qz-r wrng" data-feedback="ft11_q15_fb_a" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q15a" class="qz-opt">A) nuclear family</label><input type="radio" name="ft11_q15" id="ft11_q15b" class="qz-r corr" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q15b" class="qz-opt">B) family tree</label><input type="radio" name="ft11_q15" id="ft11_q15c" class="qz-r wrng" data-feedback="ft11_q15_fb_c" onchange="ft11_showFeedback(this);ft11_saveAnswer(this);ft11_updateStats('ft11')"><label for="ft11_q15c" class="qz-opt">C) middle child</label><div class="qz-fb ok">✅ Correct! <b>Family tree</b> = генеалогическое древо.</div><div class="qz-fb no" id="ft11_q15_fb_a">❌ <b>Nuclear family</b> = нуклеарная семья. В проекте все родственники с 1900 года — это древо.</div><div class="qz-fb no" id="ft11_q15_fb_c">❌ <b>Middle child</b> = средний ребёнок. Не подходит по смыслу.</div></div><div class="qz-stats" id="stats-ft11">Результат: 0 из 15 (0%)</div><button class="task-reset-btn" onclick="ft11_resetTest('ft11')">reset</button></div></div></div><script>function ft11_speak(text){if(!('speechSynthesis' in window)){alert('Ваш браузер не поддерживает озвучку.');return;}window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=0.95;var pick=function(){var vs=window.speechSynthesis.getVoices();for(var i=0;i<vs.length;i++){if(vs[i].lang&&vs[i].lang.indexOf('en')===0){u.voice=vs[i];return true;}}return false;};if(!pick()){window.speechSynthesis.onvoiceschanged=function(){pick();};}window.speechSynthesis.speak(u);}function ft11_speakFrom(el){ft11_speak(el.getAttribute('data-say')||'');}function ft11_pageKey(){return 'eng_lesson_'+window.location.pathname;}function ft11_save(el){var pageKey=ft11_pageKey();var elId=el.id;if(!elId)return;try{if(el.classList.contains('dr-panel')){var wrap=el.closest('.dr-wrap');var wId=wrap?wrap.id:'';localStorage.setItem(pageKey+'_'+wId+'_openPanel',el.classList.contains('active')?elId:'');}else{localStorage.setItem(pageKey+'_'+elId,JSON.stringify(el.classList.contains('revealed')));}}catch(e){}}function ft11_saveAnswer(radio){var pageKey=ft11_pageKey();var answers={};try{answers=JSON.parse(localStorage.getItem(pageKey+'_ft11_answers')||'{}')||{};}catch(e){}answers[radio.name]=radio.id;try{localStorage.setItem(pageKey+'_ft11_answers',JSON.stringify(answers));}catch(e){}}function ft11_togglePanel(id){var p=document.getElementById(id);if(!p)return;var willOpen=!p.classList.contains('active');var wrap=p.closest('.dr-wrap');if(wrap&&willOpen){wrap.querySelectorAll('.dr-panel.active').forEach(function(o){o.classList.remove('active');ft11_save(o);});}if(willOpen){p.classList.add('active');}else{p.classList.remove('active');}ft11_save(p);}function ft11_toggleBlur(id){var el=document.getElementById(id);if(!el)return;el.classList.toggle('revealed');ft11_save(el);}function ft11_showFeedback(radio){var card=radio.closest('.qz-card');if(!card)return;card.querySelectorAll('.qz-fb.no').forEach(function(fb){fb.classList.remove('visible');});if(radio.classList.contains('corr')){return;}var feedbackId=radio.getAttribute('data-feedback');if(feedbackId){var fb=document.getElementById(feedbackId);if(fb)fb.classList.add('visible');}}function ft11_updateStats(prefix){var panel=document.getElementById('test-'+prefix);if(!panel)return;var radios=panel.querySelectorAll('input[type="radio"]');var groups={};var correct={};radios.forEach(function(r){groups[r.name]=1;if(r.checked&&r.classList.contains('corr'))correct[r.name]=1;});var total=Object.keys(groups).length;var done=Object.keys(correct).length;var percent=total>0?Math.round((done/total)*100):0;var statsEl=document.getElementById('stats-'+prefix);if(statsEl)statsEl.textContent='Результат: '+done+' из '+total+' ('+percent+'%)';}function ft11_resetTest(prefix){if(!confirm('Сбросить все ответы в этом тесте?'))return;var panel=document.getElementById('test-'+prefix);if(!panel)return;panel.querySelectorAll('input[type="radio"]').forEach(function(r){r.checked=false;});panel.querySelectorAll('.qz-fb.no').forEach(function(fb){fb.classList.remove('visible');});try{localStorage.removeItem(ft11_pageKey()+'_ft11_answers');}catch(e){}ft11_updateStats(prefix);var title=document.getElementById('test-title-'+prefix);if(title){title.scrollIntoView({behavior:'smooth',block:'start'});}}function ft11_resetPractice(wrapId){if(!confirm('Сбросить все раскрытые слова в Practice Text?'))return;var wrap=document.getElementById(wrapId);if(!wrap)return;wrap.querySelectorAll('.blur-wrapper.revealed').forEach(function(el){el.classList.remove('revealed');ft11_save(el);});}function ft11_restore(){var pageKey=ft11_pageKey();var w=document.getElementById('lesson-ft11');if(!w)return;var openPanel=null;try{openPanel=localStorage.getItem(pageKey+'_lesson-ft11_openPanel');}catch(e){}w.querySelectorAll('.dr-panel').forEach(function(p){if(openPanel&&p.id===openPanel){p.classList.add('active');}else{p.classList.remove('active');}});w.querySelectorAll('.blur-wrapper').forEach(function(el){var s=null;try{s=localStorage.getItem(pageKey+'_'+el.id);}catch(e){}if(s!==null){try{if(JSON.parse(s)){el.classList.add('revealed');}}catch(e){}}});var answers={};try{answers=JSON.parse(localStorage.getItem(pageKey+'_ft11_answers')||'{}')||{};}catch(e){}w.querySelectorAll('#test-ft11 input[type="radio"]').forEach(function(r){r.checked=false;});w.querySelectorAll('#test-ft11 .qz-fb.no').forEach(function(f){f.classList.remove('visible');});Object.keys(answers).forEach(function(name){var r=document.getElementById(answers[name]);if(r){r.checked=true;ft11_showFeedback(r);}});ft11_updateStats('ft11');}window.addEventListener('DOMContentLoaded',ft11_restore);</script></div>
+<!-- 2. Лексика (практика) --> <div id="t1-2" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">2. Лексика (Практика)</h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+<!-- 3. Чтение --> <div id="t1-3" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">3. Чтение</h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+<!-- 4 Грамматика (теория)--> <div id="t1-4" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">4. Грамматика (Теория)</h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+<!-- 5 Грамматика (практика) --><div id="t1-5" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">5. Грамматика (Практика)</h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+<!-- 6. Аудирование --><div id="t1-6" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">6. Аудирование </h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+<!-- 7. Письмо --> <div id="t1-7" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">7. Письмо </h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+<!-- 8. Говорение --> <div id="t1-8" class="content-placeholder"><header class="lexica-header"><h1 class="lexica-title">8. Говорение </h1></header><style>.lexica-header{display:flex;justify-content:center;align-items:center;padding:0.5rem 2rem;text-align:center}.lexica-title{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:clamp(2.5rem,8vw,4rem);font-weight:700;margin:0;line-height:1.1;letter-spacing:-0.02em;color:#111;animation:fadeInUp 0.8s ease-out forwards}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}</style></div>
+
+
+</body>
+</html>`} />
